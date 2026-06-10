@@ -2,8 +2,10 @@ const CACHE_NAME = 'prayer-times-v1';
 const ASSETS = [
   'index.html',
   'manifest.json',
-  'https://tailwindcss.com',
-  'https://mixkit.co'
+  'https://tailwindcss.com', 
+ // استبدل رابط mixkit القديم بهذا الرابط المفتوح والمستقر تماماً داخل ملف sw.js
+'https://cloudflare.com'
+
 ];
 
 // تثبيت ملفات التطبيق الأساسية في الكاش
