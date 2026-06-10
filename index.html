@@ -652,18 +652,40 @@ attachEvents();
 refreshWidget(new Date());
 </script>
 	<script>
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-            // استخدام ./sw.js يضمن قراءة الملف داخل المجلد الفرعي على GitHub
-            navigator.serviceWorker.register('./sw.js')
-                .then((reg) => {
-                    console.log('PWA Ready on GitHub Pages!', reg.scope);
-                })
-                .catch((err) => {
-                    console.error('Service Worker Failed:', err);
-                });
+   let deferredPrompt;
+
+// 1. تسجيل الـ Service Worker الحالي (تأكد من عدم تكراره واستبداله بهذا)
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+            .then(() => console.log('PWA Ready on GitHub Pages!'))
+            .catch((err) => console.error('Service Worker Failed:', err));
+    });
+}
+
+// 2. التقاط أمر التثبيت المخفي من المتصفح
+window.addEventListener('beforeinstallprompt', (e) => {
+    // منع المتصفح من تجاهل الأمر
+    e.preventDefault();
+    // حفظ الأمر برمجياً
+    deferredPrompt = e;
+});
+
+// 3. الخدعة: بمجرد أن يضغط المستخدم في أي مكان بالصفحة لتصفح المواقيت، يتم استدعاء نافذة التثبيت تلقائياً
+window.addEventListener('click', () => {
+    if (deferredPrompt) {
+        // إظهار نافذة التثبيت الرسمية الخاصة بكروم/أندرويد
+        deferredPrompt.prompt();
+        
+        deferredPrompt.userChoice.then((choiceResult) => {
+            if (choiceResult.outcome === 'accepted') {
+                console.log('وافق المستخدم على التثبيت');
+            }
+            deferredPrompt = null;
         });
     }
+});
+
 </script>
 
 </body>
