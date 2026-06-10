@@ -357,15 +357,6 @@
 
 <script>
 // ======================== البيانات الأساسية ========================
-// تسجيل الـ Service Worker مع تحديد المسار الصحيح لـ GitHub Pages
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-        // نستخدم ./sw.js بدلاً من sw.js لضمان البحث داخل نفس المجلد
-        navigator.serviceWorker.register('./sw.js')
-            .then((reg) => console.log('PWA Ready on GitHub Pages!', reg.scope))
-            .catch((err) => console.error('Service Worker Failed:', err));
-    });
-}
 
 
 
