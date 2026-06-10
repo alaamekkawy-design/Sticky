@@ -1,0 +1,17 @@
+{
+  "name": "مواقيت الصلاة في مصر",
+  "short_name": "صلاتي",
+  "description": "تطبيق لعرض مواقيت الصلاة في مصر مع عداد تنازلي بدون إنترنت",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#f0fdf4",
+  "theme_color": "#0f766e",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "https://flaticon.com",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
