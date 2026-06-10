@@ -1,14 +1,10 @@
 const CACHE_NAME = 'prayer-times-v1';
 const ASSETS = [
-  'index.html',
-  'manifest.json',
-  'https://tailwindcss.com', 
- // استبدل رابط mixkit القديم بهذا الرابط المفتوح والمستقر تماماً داخل ملف sw.js
-'https://cloudflare.com'
-
+  './index.html',
+  './manifest.json',
+  'https://tailwindcss.com'
 ];
 
-// تثبيت ملفات التطبيق الأساسية في الكاش
 self.addEventListener('install', (e) => {
   e.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
@@ -17,7 +13,6 @@ self.addEventListener('install', (e) => {
   );
 });
 
-// استدعاء الملفات من الكاش في حال عدم وجود إنترنت
 self.addEventListener('fetch', (e) => {
   e.respondWith(
     caches.match(e.request).then((cachedResponse) => {
