@@ -660,5 +660,20 @@ initWindowPersistence();
 attachEvents();
 refreshWidget(new Date());
 </script>
+	<script>
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            // استخدام ./sw.js يضمن قراءة الملف داخل المجلد الفرعي على GitHub
+            navigator.serviceWorker.register('./sw.js')
+                .then((reg) => {
+                    console.log('PWA Ready on GitHub Pages!', reg.scope);
+                })
+                .catch((err) => {
+                    console.error('Service Worker Failed:', err);
+                });
+        });
+    }
+</script>
+
 </body>
 </html>
