@@ -2,7 +2,7 @@ const CACHE_NAME = 'prayer-times-v1';
 const ASSETS = [
   './index.html',
   './manifest.json',
-  './icon.png'
+  './my-icon.png'
 ];
 
 self.addEventListener('install', (e) => {
