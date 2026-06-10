@@ -1,10 +1,10 @@
 const CACHE_NAME = 'prayer-times-v1';
 const ASSETS = [
   './index.html',
-  './manifest.json',
-  'https://tailwindcss.com'
+  './manifest.json'
 ];
 
+// تثبيت ملفات التطبيق المحلية فقط في الكاش
 self.addEventListener('install', (e) => {
   e.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
@@ -13,6 +13,7 @@ self.addEventListener('install', (e) => {
   );
 });
 
+// استدعاء الملفات محلياً في حال عدم وجود إنترنت
 self.addEventListener('fetch', (e) => {
   e.respondWith(
     caches.match(e.request).then((cachedResponse) => {
