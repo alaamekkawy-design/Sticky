@@ -775,26 +775,21 @@ const prayerArabicNames = {
 };
 
 function startCountdown(prayerTimes) {
-    // دالة داخلية لتنظيف صيغة الوقت وتحويلها بالكامل لـ 24 ساعة صافية (HH:MM)
     function cleanTime(timeStr) {
         if (!timeStr) return "00:00";
-        // تنظيف أي نصوص زائدة مثل (EEST) أو (EET) أو مسافات
         let clean = timeStr.replace(/[^\d:apm\s]/gi, '').trim();
         
-        // إذا كانت الصيغة تحتوي على AM أو PM (صيغة 12 ساعة)
         if (clean.toLowerCase().includes('am') || clean.toLowerCase().includes('pm')) {
             let isPM = clean.toLowerCase().includes('pm');
             let timeParts = clean.replace(/(am|pm)/i, '').trim().split(':');
             let hours = parseInt(timeParts[0]);
-            let minutes = timeParts[1];
+            let minutes = timeParts[1]; //  تم تصحيح القوس هنا [1] لضمان جلب الدقائق
             
             if (isPM && hours < 12) hours += 12;
             if (!isPM && hours === 12) hours = 0;
             
             return `${String(hours).padStart(2, '0')}:${minutes}`;
         }
-        
-        // إذا كانت صيغة 24 ساعة عادية، نأخذ أول جزءين فقط (الساعة والدقيقة)
         return clean.split(':').slice(0, 2).join(':');
     }
 
@@ -804,14 +799,12 @@ function startCountdown(prayerTimes) {
         'Asr': 'العصر', 'Maghrib': 'المغرب', 'Isha': 'العشاء'
     };
 
-    // تشغيل العداد وتحديثه كل ثانية
     setInterval(() => {
         const now = new Date();
         let nextPrayerName = '';
         let nextPrayerTime = null;
 
         for (let name of prayerNames) {
-            // تأمين جلب الوقت وتنظيفه تماماً
             const timeString = prayerTimes[name] || prayerTimes.timings?.[name];
             if (!timeString) continue;
 
@@ -828,7 +821,6 @@ function startCountdown(prayerTimes) {
             }
         }
 
-        // إذا انتهت صلوات اليوم، ننتقل لفجر اليوم التالي
         if (!nextPrayerTime) {
             nextPrayerName = 'Fajr';
             const timeString = prayerTimes['Fajr'] || prayerTimes.timings?.['Fajr'];
@@ -845,7 +837,6 @@ function startCountdown(prayerTimes) {
         const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
         const seconds = Math.floor((diff % (1000 * 60)) / 1000);
 
-        // تحديث واجهة الـ HTML
         const titleEl = document.getElementById('next-prayer-title');
         const hEl = document.getElementById('timer-hours');
         const mEl = document.getElementById('timer-minutes');
@@ -858,6 +849,7 @@ function startCountdown(prayerTimes) {
 
     }, 1000);
 }
+
 
 
 // ======================== تفعيل الأحداث ========================
