@@ -772,18 +772,50 @@ const prayerArabicNames = {
     'Asr': 'العصر', 'Maghrib': 'المغرب', 'Isha': 'العشاء'
 };
 
-// دالة لتحديث العداد التنازلي (يجب استدعاؤها بعد جلب مواقيت الصلاة بنجاح)
 function startCountdown(prayerTimes) {
-    // prayerTimes هو كائن يحتوي على مواقيت اليوم مثل: { Fajr: "04:30", Dhuhr: "12:00", ... }
+    // دالة داخلية لتنظيف صيغة الوقت وتحويلها بالكامل لـ 24 ساعة صافية (HH:MM)
+    function cleanTime(timeStr) {
+        if (!timeStr) return "00:00";
+        // تنظيف أي نصوص زائدة مثل (EEST) أو (EET) أو مسافات
+        let clean = timeStr.replace(/[^\d:apm\s]/gi, '').trim();
+        
+        // إذا كانت الصيغة تحتوي على AM أو PM (صيغة 12 ساعة)
+        if (clean.toLowerCase().includes('am') || clean.toLowerCase().includes('pm')) {
+            let isPM = clean.toLowerCase().includes('pm');
+            let timeParts = clean.replace(/(am|pm)/i, '').trim().split(':');
+            let hours = parseInt(timeParts[0]);
+            let minutes = timeParts[1];
+            
+            if (isPM && hours < 12) hours += 12;
+            if (!isPM && hours === 12) hours = 0;
+            
+            return `${String(hours).padStart(2, '0')}:${minutes}`;
+        }
+        
+        // إذا كانت صيغة 24 ساعة عادية، نأخذ أول جزءين فقط (الساعة والدقيقة)
+        return clean.split(':').slice(0, 2).join(':');
+    }
 
+    const prayerNames = ['Fajr', 'Sunrise', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'];
+    const prayerArabicNames = {
+        'Fajr': 'الفجر', 'Sunrise': 'الشروق', 'Dhuhr': 'الظهر', 
+        'Asr': 'العصر', 'Maghrib': 'المغرب', 'Isha': 'العشاء'
+    };
+
+    // تشغيل العداد وتحديثه كل ثانية
     setInterval(() => {
         const now = new Date();
         let nextPrayerName = '';
         let nextPrayerTime = null;
 
-        // البحث عن الصلاة القادمة في اليوم الحالي
         for (let name of prayerNames) {
-            const [hours, minutes] = prayerTimes[name].split(':');
+            // تأمين جلب الوقت وتنظيفه تماماً
+            const timeString = prayerTimes[name] || prayerTimes.timings?.[name];
+            if (!timeString) continue;
+
+            const formattedTime = cleanTime(timeString);
+            const [hours, minutes] = formattedTime.split(':');
+            
             const prayerDate = new Date(now);
             prayerDate.setHours(parseInt(hours), parseInt(minutes), 0, 0);
 
@@ -794,27 +826,33 @@ function startCountdown(prayerTimes) {
             }
         }
 
-        // إذا انتهت صلوات اليوم، فالصلاة القادمة هي فجر اليوم التالي
+        // إذا انتهت صلوات اليوم، ننتقل لفجر اليوم التالي
         if (!nextPrayerTime) {
             nextPrayerName = 'Fajr';
-            const [hours, minutes] = prayerTimes['Fajr'].split(':');
+            const timeString = prayerTimes['Fajr'] || prayerTimes.timings?.['Fajr'];
+            const formattedTime = cleanTime(timeString);
+            const [hours, minutes] = formattedTime.split(':');
+            
             nextPrayerTime = new Date(now);
-            nextPrayerTime.setDate(now.getDate() + 1); // اليوم التالي
+            nextPrayerTime.setDate(now.getDate() + 1);
             nextPrayerTime.setHours(parseInt(hours), parseInt(minutes), 0, 0);
         }
 
-        // حساب الفارق الزمني بالميلي ثانية
         const diff = nextPrayerTime - now;
-
         const hours = Math.floor(diff / (1000 * 60 * 60));
         const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
         const seconds = Math.floor((diff % (1000 * 60)) / 1000);
 
-        // تحديث الواجهة بالبيانات والأرقام
-        document.getElementById('next-prayer-title').innerText = `الصلاة القادمة: ${prayerArabicNames[nextPrayerName]}`;
-        document.getElementById('timer-hours').innerText = String(hours).padStart(2, '0');
-        document.getElementById('timer-minutes').innerText = String(minutes).padStart(2, '0');
-        document.getElementById('timer-seconds').innerText = String(seconds).padStart(2, '0');
+        // تحديث واجهة الـ HTML
+        const titleEl = document.getElementById('next-prayer-title');
+        const hEl = document.getElementById('timer-hours');
+        const mEl = document.getElementById('timer-minutes');
+        const sEl = document.getElementById('timer-seconds');
+
+        if (titleEl) titleEl.innerText = `الصلاة القادمة: ${prayerArabicNames[nextPrayerName]}`;
+        if (hEl) hEl.innerText = String(hours).padStart(2, '0');
+        if (mEl) mEl.innerText = String(minutes).padStart(2, '0');
+        if (sEl) sEl.innerText = String(seconds).padStart(2, '0');
 
     }, 1000);
 }
