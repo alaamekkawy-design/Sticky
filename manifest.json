@@ -81,5 +81,20 @@
       "type": "image/png",
       "purpose": "maskable"
     }
+  ],
+  "shortcuts": [
+    {
+      "name": "العداد التنازلي للصلاة",
+      "short_name": "العداد",
+      "description": "الذهاب مباشرة إلى عداد الوقت المتبقي للصلاة القادمة",
+      "url": "./index.html?shortcut=countdown",
+      "icons": [
+        {
+          "src": "icons/icon-96x96.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
+    }
   ]
 }
