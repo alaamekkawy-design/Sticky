@@ -737,6 +737,27 @@ window.addEventListener('click', () => {
     }
 });
 
+document.addEventListener("DOMContentLoaded", () => {
+  // 1. قراءة الرابط للتأكد هل المستخدم قادم من الاختصار أم لا
+  const urlParams = new URLSearchParams(window.location.search);
+  
+  if (urlParams.get('shortcut') === 'countdown') {
+    // 2. ابحث عن عنصر العداد التنازلي في صفحتك واجعله يتحرك إليه بسلاسة
+    // تأكد من استبدال 'countdown-timer' بالـ id الحقيقي لعنصر العداد في الـ HTML لديك
+    const countdownElement = document.getElementById('countdown-timer') || document.querySelector('.countdown'); 
+    
+    if (countdownElement) {
+      // الانتظار نصف ثانية لضمان تحميل الواجهة بالكامل ثم الانتقال للعداد
+      setTimeout(() => {
+        countdownElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 500);
+    }
+    console.log("تم الدخول عبر الاختصار: توجيه المستخدم للعداد التنازلي.");
+  }
+});
+
+
+		
 </script>
 
 </body>
