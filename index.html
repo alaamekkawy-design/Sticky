@@ -4,11 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <title>التقويم الإسلامي</title>
-<!-- منع خطأ الـ 404 وإعلام المتصفح بعدم جلب ملف خارجي للـ favicon -->
 <link rel="icon" href="data:,">
-<!-- ربط ملف Manifest لتثبيت التطبيق على الهاتف -->
 <link rel="manifest" href="./manifest.json">
-<!-- دعم هواتف آيفون وشريط الحالة والوسم الحديث المعتمد لدعم تثبيت تطبيقات الويب -->
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="#0f766e">
@@ -52,8 +49,6 @@
  .picker-actions { display: flex; gap: 10px; margin-top: 8px; }
  .picker-actions button { flex: 1; background: #1a3a6b; border: none; color: white; padding: 7px; border-radius: 40px; font-weight: bold; cursor: pointer; }
  .picker-actions button.outline { background: #e0e5ec; color: #1a3a6b; }
- 
- /* العداد التنازلي المصغر والمنسق بشكل مثالي */
  .countdown-container { background-color: #f0fdf4; border: 1px solid #0f766e; border-radius: 8px; padding: 6px 12px; text-align: center; max-width: 280px; margin: 4px auto; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03); }
  .countdown-container h3 { color: #0f766e; margin: 0 0 2px 0; font-size: 0.9rem; font-weight: 700; }
  .timer-display { display: flex; justify-content: center; align-items: center; direction: ltr; }
@@ -90,7 +85,6 @@
   <span id="copticSpan" class="coptic">...</span>
  </div>
 
- <!-- حاوية العداد التنازلي المصغرة والمعدلة للصلاة القادمة -->
  <div id="countdown-card" class="countdown-container">
  <h3 id="next-prayer-title">الصلاة القادمة: --</h3>
  <div class="timer-display">
@@ -219,7 +213,6 @@ async function fetchPrayerTimes(date, city) {
  return null;
  } catch(e) { return null; }
 }
-
 // ==========================================
 // 3. دالات تحديث وتوزيع البيانات على الشاشة
 // ==========================================
@@ -237,9 +230,9 @@ function updateGregorianDisplay(date) {
 
 function updateHijriDisplay(hijri) {
  if(hijri) {
-  document.getElementById('hijriDay').innerText = toAr(hijri.day);
-  document.getElementById('hijriMonth').innerText = hijri.monthName;
-  document.getElementById('hijriYear').innerText = toAr(hijri.year);
+ document.getElementById('hijriDay').innerText = toAr(hijri.day);
+ document.getElementById('hijriMonth').innerText = hijri.monthName;
+ document.getElementById('hijriYear').innerText = toAr(hijri.year);
  }
 }
 
@@ -247,28 +240,200 @@ function updatePrayerTableDisplay(prayers) {
  const tbody = document.getElementById('prayerBody');
  tbody.innerHTML = '';
  for(let i=0; i<CITIES.length; i++) {
-  const p = prayers[i];
-  const row = tbody.insertRow();
-  row.insertCell(0).innerText = CITIES[i].name;
-  if(p && p.display) {
-   row.insertCell(1).innerHTML = `<span>${p.display.fajr}</span>`;
-   row.insertCell(2).innerHTML = `<span>${p.display.sunrise}</span>`;
-   row.insertCell(3).innerHTML = `<span>${p.display.dhuhr}</span>`;
-   row.insertCell(4).innerHTML = `<span>${p.display.asr}</span>`;
-   row.insertCell(5).innerHTML = `<span>${p.display.maghrib}</span>`;
-   row.insertCell(6).innerHTML = `<span>${p.display.isha}</span>`;
-  } else {
-   let cell = row.insertCell(1); cell.colSpan = 6; cell.innerText = 'خطأ'; cell.style.textAlign = 'center';
-  }
+ const p = prayers[i];
+ const row = tbody.insertRow();
+ row.insertCell(0).innerText = CITIES[i].name;
+ if(p && p.display) {
+  row.insertCell(1).innerHTML = `<span>${p.display.fajr}</span>`;
+  row.insertCell(2).innerHTML = `<span>${p.display.sunrise}</span>`;
+  row.insertCell(3).innerHTML = `<span>${p.display.dhuhr}</span>`;
+  row.insertCell(4).innerHTML = `<span>${p.display.asr}</span>`;
+  row.insertCell(5).innerHTML = `<span>${p.display.maghrib}</span>`;
+  row.insertCell(6).innerHTML = `<span>${p.display.isha}</span>`;
+ } else {
+  let cell = row.insertCell(1); cell.colSpan = 6; cell.innerText = 'خطأ'; cell.style.textAlign = 'center';
+ }
  }
 }
+
 // ==========================================
-// 7. PWA Installation, Service Worker & Shortcuts Management
+// 4. منطق العداد التنازلي والإنعاش التلقائي
+// ==========================================
+function startCountdown(prayerTimes) {
+    const prayerNames = ['Fajr', 'Sunrise', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'];
+    const prayerArabicNames = { 'Fajr': 'الفجر', 'Sunrise': 'الشروق', 'Dhuhr': 'الظهر', 'Asr': 'العصر', 'Maghrib': 'المغرب', 'Isha': 'العشاء' };
+
+    countdownIntervalId = setInterval(() => {
+        const now = new Date();
+        let nextPrayerName = '';
+        let nextPrayerTime = null;
+
+        for (let name of prayerNames) {
+            const timeString = prayerTimes[name];
+            if (!timeString) continue;
+            const [hours, minutes] = timeString.split(':');
+            const prayerDate = new Date(now);
+            prayerDate.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+            if (prayerDate > now) { nextPrayerName = name; nextPrayerTime = prayerDate; break; }
+        }
+
+        if (!nextPrayerTime) {
+            nextPrayerName = 'Fajr';
+            const timeString = prayerTimes['Fajr'];
+            if (timeString) {
+                const [hours, minutes] = timeString.split(':');
+                nextPrayerTime = new Date(now); nextPrayerTime.setDate(now.getDate() + 1);
+                nextPrayerTime.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+            }
+        }
+
+        if (!nextPrayerTime) return;
+        const diff = nextPrayerTime - now;
+        const hours = Math.floor(diff / (1000 * 60 * 60));
+        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+        document.getElementById('next-prayer-title').innerText = `الصلاة القادمة: ${prayerArabicNames[nextPrayerName]}`;
+        document.getElementById('timer-hours').innerText = String(hours).padStart(2, '0');
+        document.getElementById('timer-minutes').innerText = String(minutes).padStart(2, '0');
+        document.getElementById('timer-seconds').innerText = String(seconds).padStart(2, '0');
+    }, 1000);
+}
+
+async function refreshWidget(targetDate) {
+ if(isLoading) return;
+ isLoading = true;
+ const date = targetDate || currentDisplayDate;
+ updateGregorianDisplay(date);
+ try {
+ const hijri = await fetchHijriDate(date);
+ if(hijri) updateHijriDisplay(hijri);
+ const allPrayers = await Promise.all(CITIES.map(c => fetchPrayerTimes(date, c)));
+ updatePrayerTableDisplay(allPrayers);
+ 
+ // الربط التلقائي الصحيح والمضمون للعداد مع بيانات أول مدينة بالمصفوفة (القاهرة)
+ if (allPrayers && allPrayers[0] && allPrayers[0].raw) {
+     if (countdownIntervalId) clearInterval(countdownIntervalId);
+     startCountdown(allPrayers[0].raw);
+ }
+ } catch(e) { console.warn(e); }
+ isLoading = false;
+}
+
+// ==========================================
+// 5. منتقي التاريخ الفاخر (DatePicker Modal)
+// ==========================================
+let pickerModal = null;
+function openDatePicker() { activePickerDate = new Date(currentDisplayDate); renderPicker(); }
+function closePicker() { if(pickerModal) pickerModal.remove(); pickerModal = null; }
+
+function renderPicker() {
+ if(pickerModal) pickerModal.remove();
+ const overlay = document.createElement('div'); overlay.className = 'datepicker-overlay';
+ const y = activePickerDate.getFullYear(), m = activePickerDate.getMonth();
+ const firstDay = new Date(y, m, 1).getDay(), daysInMonth = new Date(y, m+1, 0).getDate();
+ let grid = [];
+ for(let i=0; i<firstDay; i++) grid.push(null);
+ for(let d=1; d<=daysInMonth; d++) grid.push(new Date(y, m, d));
+ while(grid.length % 7 !== 0) grid.push(null);
+ 
+ const weekdays = ['أحد','إثنين','ثلاثاء','أربعاء','خميس','جمعة','سبت']; 
+ overlay.innerHTML = `
+ <div class="datepicker-modal">
+ <div class="year-month-control">
+  <button id="prevYear">««</button><button id="prevMonth">‹</button>
+  <span id="monthYear">${AR_MONTHS_G[m]} ${toAr(y)}</span>
+  <button id="nextMonth">›</button><button id="nextYear">»»</button>
+ </div>
+ <div class="picker-grid" id="pickerGrid"></div>
+ <div class="picker-actions">
+  <button id="todayBtn">📅 اليوم</button><button id="closeBtn" class="outline">إلغاء</button>
+ </div>
+ </div>`;
+ document.body.appendChild(overlay); pickerModal = overlay;
+ 
+ function buildGrid() {
+ const container = document.getElementById('pickerGrid'); container.innerHTML = '';
+ weekdays.forEach(wd => { let d=document.createElement('div'); d.className='picker-weekday'; d.innerText=wd; container.appendChild(d); });
+ grid.forEach(dt => {
+  let div = document.createElement('div'); div.className = 'picker-day';
+  if(!dt) { div.classList.add('empty'); div.innerText = ''; }
+  else {
+   div.innerText = toAr(dt.getDate());
+   if(dt.toDateString() === currentDisplayDate.toDateString()) div.classList.add('selected');
+   div.onclick = async () => { currentDisplayDate = new Date(dt); await refreshWidget(currentDisplayDate); closePicker(); };
+  }
+  container.appendChild(div);
+ });
+ }
+ 
+ function updateGrid() {
+ const ny = activePickerDate.getFullYear(), nm = activePickerDate.getMonth();
+ document.getElementById('monthYear').innerText = `${AR_MONTHS_G[nm]} ${toAr(ny)}`;
+ const fd = new Date(ny, nm, 1).getDay(), dim = new Date(ny, nm+1, 0).getDate();
+ let ng = []; for(let i=0; i<fd; i++) ng.push(null); for(let d=1; d<=dim; d++) ng.push(new Date(ny, nm, d)); while(ng.length % 7 !== 0) ng.push(null);
+ grid = ng; buildGrid();
+ }
+ 
+ document.getElementById('prevMonth').onclick = () => { activePickerDate.setMonth(activePickerDate.getMonth()-1); updateGrid(); };
+ document.getElementById('nextMonth').onclick = () => { activePickerDate.setMonth(activePickerDate.getMonth()+1); updateGrid(); };
+ document.getElementById('prevYear').onclick = () => { activePickerDate.setFullYear(activePickerDate.getFullYear()-1); updateGrid(); };
+ document.getElementById('nextYear').onclick = () => { activePickerDate.setFullYear(activePickerDate.getFullYear()+1); updateGrid(); };
+ document.getElementById('todayBtn').onclick = async () => { currentDisplayDate = new Date(); await refreshWidget(currentDisplayDate); closePicker(); };
+ document.getElementById('closeBtn').onclick = closePicker;
+ overlay.onclick = (e) => { if(e.target === overlay) closePicker(); };
+ buildGrid();
+}
+// ==========================================
+// 6. حفظ واستعادة حجم ومكان النافذة (Desktop)
+// ==========================================
+const WINDOW_STORAGE_KEY = 'islamic_calendar_window';
+function saveWindowState() {
+ try {
+ if (window.screenX > -10000 && window.screenY > -10000 && window.outerWidth > 100 && window.outerHeight > 100) {
+  const state = { x: window.screenX, y: window.screenY, width: window.outerWidth, height: window.outerHeight };
+  localStorage.setItem(WINDOW_STORAGE_KEY, JSON.stringify(state));
+  document.title = `التقويم الإسلامي - ${state.width}×${state.height}`;
+ }
+ } catch(e) { console.warn('Could not save window state:', e); }
+}
+
+function restoreWindowState() {
+ const saved = localStorage.getItem(WINDOW_STORAGE_KEY);
+ if (saved) {
+ try {
+  const state = JSON.parse(saved);
+  if (state.width && state.height && state.width > 300 && state.width < 2000 && state.height > 300 && state.height < 2000) {
+   const maxX = window.screen.availWidth - 100; const maxY = window.screen.availHeight - 100;
+   const x = Math.min(Math.max(state.x, 0), maxX); const y = Math.min(Math.max(state.y, 0), maxY);
+   window.resizeTo(state.width, state.height); setTimeout(() => window.moveTo(x, y), 50);
+   document.title = `التقويم الإسلامي - ${state.width}×${state.height}`; return true;
+  }
+ } catch(e) { console.warn('Could not restore window state:', e); }
+ }
+ return false;
+}
+
+function initWindowPersistence() {
+ const restored = restoreWindowState();
+ if (!restored) { window.resizeTo(480, 500); document.title = 'التقويم الإسلامي - 480×500'; }
+ window.addEventListener('resize', () => { clearTimeout(saveTimer); saveTimer = setTimeout(saveWindowState, 500); });
+ window.addEventListener('move', () => { clearTimeout(saveTimer); saveTimer = setTimeout(saveWindowState, 500); });
+ window.addEventListener('beforeunload', saveWindowState);
+}
+
+function attachEvents() {
+ ['dayAr','dayEn','gregBlock','hijriBlock','gregLineFullBlock'].forEach(id => {
+  const el = document.getElementById(id); if(el) el.addEventListener('click', openDatePicker);
+ });
+}
+
+// ==========================================
+// 7. إدارة التثبيت PWA والحدث الذكي والـ Shortcuts
 // ==========================================
 let deferredPrompt; 
 const installBtn = document.getElementById('pwaInstallBtn');
 
-// Secure relative Service Worker registration for GitHub Pages scopes
 if ('serviceWorker' in navigator) {
  window.addEventListener('load', () => {
   navigator.serviceWorker.register('./sw.js')
@@ -277,44 +442,38 @@ if ('serviceWorker' in navigator) {
  });
 }
 
-// Intercept browser's native install prompt event
 window.addEventListener('beforeinstallprompt', (e) => {
- e.preventDefault(); 
- deferredPrompt = e;
- if(installBtn) installBtn.style.display = 'block'; // Show custom action button
+ e.preventDefault(); deferredPrompt = e;
+ if(installBtn) installBtn.style.display = 'block';
 });
 
 if(installBtn) {
  installBtn.addEventListener('click', async () => {
   if (!deferredPrompt) return;
-  deferredPrompt.prompt(); // Trigger native install confirmation overlay
+  deferredPrompt.prompt();
   const { outcome } = await deferredPrompt.userChoice;
-  console.log(`User installation choice: ${outcome}`);
-  deferredPrompt = null; 
-  installBtn.style.display = 'none';
+  console.log(`User choice: ${outcome}`);
+  deferredPrompt = null; installBtn.style.display = 'none';
  });
 }
 
 window.addEventListener('appinstalled', () => {
  if(installBtn) installBtn.style.display = 'none';
- console.log('Application successfully installed on the device!');
+ console.log('تم التثبيت بنجاح تام على الهاتف!');
 });
 
-// App Shortcuts deep-link event handler (smoothly scroll down to the mini countdown card)
 document.addEventListener("DOMContentLoaded", () => {
  const urlParams = new URLSearchParams(window.location.search);
  if (urlParams.get('shortcut') === 'countdown') {
-  const countdownElement = document.getElementById('countdown-card'); 
-  if (countdownElement) {
-   setTimeout(() => { 
-    countdownElement.scrollIntoView({ behavior: 'smooth', block: 'center' }); 
-   }, 600);
-  }
+ const countdownElement = document.getElementById('countdown-card'); 
+ if (countdownElement) {
+  setTimeout(() => { countdownElement.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 600);
+ }
  }
 });
 
 // ==========================================
-// 8. Application Bootstrap Run point
+// 8. انطلاق التطبيق
 // ==========================================
 initWindowPersistence();
 attachEvents();
