@@ -320,6 +320,59 @@
     background: #e0e5ec;
     color: #1a3a6b;
   }
+
+
+
+
+	.countdown-container {
+    background-color: #ffffff;
+    border: 2px solid #0f766e;
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    max-width: 400px;
+    margin: 20px auto;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    font-family: inherit;
+}
+.countdown-container h3 {
+    color: #0f766e;
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 1.2rem;
+}
+.timer-display {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    direction: ltr; /* لعرض الوقت بشكل صحيح من اليسار لليمين رقمياً */
+}
+.time-block {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 60px;
+}
+.time-block span {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #0f766e;
+}
+.time-block label {
+    font-size: 0.8rem;
+    color: #666;
+    margin-top: 4px;
+}
+.separator {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #0f766e;
+    margin: 0 10px;
+    padding-bottom: 22px;
+}
+
+
+	
 </style>
 </head>
 <body>
@@ -350,6 +403,29 @@
 	<span id="copticSpan" class="coptic">...</span>
   </div>
 
+
+	
+<!-- حاوية العداد التنازلي للصلاة القادمة -->
+<div id="countdown-card" class="countdown-container">
+    <h3 id="next-prayer-title">الصلاة القادمة: --</h3>
+    <div class="timer-display">
+        <div class="time-block">
+            <span id="timer-hours">00</span>
+            <label>ساعة</label>
+        </div>
+        <span class="separator">:</span>
+        <div class="time-block">
+            <span id="timer-minutes">00</span>
+            <label>دقيقة</label>
+        </div>
+        <span class="separator">:</span>
+        <div class="time-block">
+            <span id="timer-seconds">00</span>
+            <label>ثانية</label>
+        </div>
+    </div>
+</div>
+<!-- --------- -->
   <div class="table-footer-container">
     <table class="prayer-table">
       <thead>
@@ -686,6 +762,64 @@ function renderPicker() {
   buildGrid();
 }
 
+
+
+
+	// مصفوفة بأسماء الصلوات لترتيب عملية البحث عن الصلاة القادمة
+const prayerNames = ['Fajr', 'Sunrise', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'];
+const prayerArabicNames = {
+    'Fajr': 'الفجر', 'Sunrise': 'الشروق', 'Dhuhr': 'الظهر', 
+    'Asr': 'العصر', 'Maghrib': 'المغرب', 'Isha': 'العشاء'
+};
+
+// دالة لتحديث العداد التنازلي (يجب استدعاؤها بعد جلب مواقيت الصلاة بنجاح)
+function startCountdown(prayerTimes) {
+    // prayerTimes هو كائن يحتوي على مواقيت اليوم مثل: { Fajr: "04:30", Dhuhr: "12:00", ... }
+
+    setInterval(() => {
+        const now = new Date();
+        let nextPrayerName = '';
+        let nextPrayerTime = null;
+
+        // البحث عن الصلاة القادمة في اليوم الحالي
+        for (let name of prayerNames) {
+            const [hours, minutes] = prayerTimes[name].split(':');
+            const prayerDate = new Date(now);
+            prayerDate.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+
+            if (prayerDate > now) {
+                nextPrayerName = name;
+                nextPrayerTime = prayerDate;
+                break;
+            }
+        }
+
+        // إذا انتهت صلوات اليوم، فالصلاة القادمة هي فجر اليوم التالي
+        if (!nextPrayerTime) {
+            nextPrayerName = 'Fajr';
+            const [hours, minutes] = prayerTimes['Fajr'].split(':');
+            nextPrayerTime = new Date(now);
+            nextPrayerTime.setDate(now.getDate() + 1); // اليوم التالي
+            nextPrayerTime.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+        }
+
+        // حساب الفارق الزمني بالميلي ثانية
+        const diff = nextPrayerTime - now;
+
+        const hours = Math.floor(diff / (1000 * 60 * 60));
+        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+        // تحديث الواجهة بالبيانات والأرقام
+        document.getElementById('next-prayer-title').innerText = `الصلاة القادمة: ${prayerArabicNames[nextPrayerName]}`;
+        document.getElementById('timer-hours').innerText = String(hours).padStart(2, '0');
+        document.getElementById('timer-minutes').innerText = String(minutes).padStart(2, '0');
+        document.getElementById('timer-seconds').innerText = String(seconds).padStart(2, '0');
+
+    }, 1000);
+}
+
+
 // ======================== تفعيل الأحداث ========================
 function attachEvents() {
   ['dayAr','dayEn','gregBlock','hijriBlock','gregLineFullBlock'].forEach(id => {
@@ -738,23 +872,17 @@ window.addEventListener('click', () => {
 });
 
 document.addEventListener("DOMContentLoaded", () => {
-  // 1. قراءة الرابط للتأكد هل المستخدم قادم من الاختصار أم لا
   const urlParams = new URLSearchParams(window.location.search);
-  
   if (urlParams.get('shortcut') === 'countdown') {
-    // 2. ابحث عن عنصر العداد التنازلي في صفحتك واجعله يتحرك إليه بسلاسة
-    // تأكد من استبدال 'countdown-timer' بالـ id الحقيقي لعنصر العداد في الـ HTML لديك
-    const countdownElement = document.getElementById('countdown-timer') || document.querySelector('.countdown'); 
-    
+    const countdownElement = document.getElementById('countdown-card'); 
     if (countdownElement) {
-      // الانتظار نصف ثانية لضمان تحميل الواجهة بالكامل ثم الانتقال للعداد
       setTimeout(() => {
         countdownElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }, 500);
+      }, 600); // إعطاء مهلة بسيطة لبدء حركة الشاشة بسلاسة
     }
-    console.log("تم الدخول عبر الاختصار: توجيه المستخدم للعداد التنازلي.");
   }
 });
+
 
 
 		
