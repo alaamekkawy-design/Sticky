@@ -323,6 +323,10 @@
 </style>
 </head>
 <body>
+<!-- زر التثبيت المخصص (سيكون مخفياً حتى يتأكد المتصفح من جاهزية التطبيق) -->
+<button id="pwaInstallBtn" style="display: none; background-color: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-family: inherit;">
+   تثبيت تطبيق مواقيت الصلاة على جهازك
+</button>
 
 <div class="widget" id="widget">
   <div class="day-name-ar clickable-date" id="dayAr">...</div>
@@ -358,6 +362,51 @@
 </div>
 
 <script>
+// متغير لتخزين حدث التثبيت لاستخدامه لاحقاً
+let deferredPrompt; 
+const installBtn = document.getElementById('pwaInstallBtn');
+
+// 1. الاستماع لحدث التثبيت التلقائي من المتصفح
+window.addEventListener('beforeinstallprompt', (e) => {
+  // منع المتصفح من إظهار نافذة التثبيت الافتراضية فوراً
+  e.preventDefault();
+  
+  // حفظ الحدث في المتغير لكي نقوم باستدعائه عندما يضغط المستخدم على زرنا المخصص
+  deferredPrompt = e;
+  
+  // إظهار زر التثبيت المخصص للمستخدم الآن بعدما تأكدنا أن التطبيق جاهز للتثبيت
+  installBtn.style.display = 'block';
+  
+  console.log("'beforeinstallprompt' Event fired & captured successfully.");
+});
+
+// 2. معالجة الضغط على زر التثبيت المخصص
+installBtn.addEventListener('click', async () => {
+  if (!deferredPrompt) return;
+  
+  // إظهار نافذة التثبيت الخاصة بالمتصفح (المنبثقة)
+  deferredPrompt.prompt();
+  
+  // انتظار رد فعل المستخدم (هل وافق على التثبيت أم رفض؟)
+  const { outcome } = await deferredPrompt.userChoice;
+  console.log(`User response to install prompt: ${outcome}`);
+  
+  // تنظيف المتغير لأن الحدث لا يمكن استخدامه سوى مرة واحدة
+  deferredPrompt = null;
+  
+  // إخفاء زر التثبيت مجدداً لأن العملية تمت أو تم التعامل معها
+  installBtn.style.display = 'none';
+});
+
+// 3. الاستماع لحدث إتمام التثبيت بنجاح (اختياري - مفيد للإحصائيات)
+window.addEventListener('appinstalled', (event) => {
+  console.log('تطبيق مواقيت الصلاة تم تثبيته بنجاح على الجهاز!');
+  // هنا يمكنك إخفاء أي عناصر واجهة مستخدم إضافية متعلقة بالتثبيت
+  installBtn.style.display = 'none';
+});
+
+
+	
 // ======================== البيانات الأساسية ========================
 
 
