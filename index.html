@@ -6,492 +6,429 @@
 <title>التقويم الإسلامي</title>
 <!-- منع خطأ الـ 404 وإعلام المتصفح بعدم جلب ملف خارجي للـ favicon -->
 <link rel="icon" href="data:,">
-
-<!-- ربط ملف الـ Manifest لتثبيت التطبيق على الهاتف -->
+<!-- ربط ملف Manifest لتثبيت التطبيق على الهاتف -->
 <link rel="manifest" href="./manifest.json">
-<!-- دعم هواتف آيفون وشريط الحالة -->
-<!-- الوسم الحديث المعتمد لدعم تثبيت تطبيقات الويب على الموبايل -->
+<!-- دعم هواتف آيفون وشريط الحالة والوسم الحديث المعتمد لدعم تثبيت تطبيقات الويب -->
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="#0f766e">
-
-<link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+<link href="https://googleapis.com" rel="stylesheet">
 <style>
-  * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-  }
-
-  html, body {
-    width: 100%;
-    min-width: 0;
-    height: 100%;
-    overflow: hidden;
-  }
-
-  body {
-    background: #1a2a3a;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-family: 'Cairo', sans-serif;
-    padding: 0px;
-  }
-
-  .widget {
-    background: #ffffff;
-    width: 100%;
-    height: 100%;
-    min-width: 0;
-    border-radius: 12px;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.2);
-    overflow: hidden;
-    border: 1px solid #b0bfcf;
-    padding: 2% 2% 2%;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-  }
-
-  .clickable-date {
-    cursor: pointer;
-    transition: opacity 0.1s;
-  }
-  .clickable-date:active {
-    opacity: 0.65;
-  }
-
-  .day-name-ar {
-    text-align: center;
-    font-family: 'Amiri', serif;
-    font-size: clamp(16px, 7vmin, 42px);
-    font-weight: 800;
-    color: #1a3a6b;
-    line-height: 1.1;
-    margin: 0 0 1% 0;
-  }
-  .day-name-en {
-    text-align: center;
-    font-size: clamp(9px, 3.2vmin, 16px);
-    font-weight: 700;
-    color: #1a3a6b;
-    border-radius: 30px;
-    border: 1.5px solid #1a3a6b;
-    display: inline-block;
-    padding: 0.3% 3%;
-    margin: 0 auto 1%;
-    width: fit-content;
-    letter-spacing: 0.5px;
-    background: white;
-  }
-  .dates-row {
-    display: flex;
-    border-top: 1.5px solid #1a3a6b;
-    border-bottom: 1.5px solid #1a3a6b;
-    margin: 1% 0 1.5%;
-    flex: 0 0 auto;
-  }
-  .date-block {
-    flex: 1;
-    text-align: center;
-    padding: 1% 2px;
-    cursor: pointer;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5%;
-  }
-  .date-block:first-child {
-    border-left: 1.5px solid #1a3a6b;
-  }
-  .date-num {
-    font-family: 'Amiri', serif;
-    font-size: clamp(24px, 15vmin, 60px);
-    font-weight: 800;
-    color: #1a3a6b;
-    line-height: 1;
-  }
-  .date-month-ar {
-    font-family: 'Amiri', serif;
-    font-size: clamp(11px, 5vmin, 18px);
-    font-weight: 700;
-    color: #1a3a6b;
-    /*background: #eef2f9;*/
-    padding: 0.3% 1%;
-    border-radius: 30px;
-    white-space: nowrap;
-  }
-  .date-month-syr {
-    font-family: 'Amiri', serif;
-    font-size: clamp(10px, 3.5vmin, 15px);
-    font-weight: 600;
-    color: #1a3a6b;
-    background: transparent;
-    opacity: 0.75;
-    white-space: nowrap;
-  }
-  .date-year {
-    font-family: 'Cairo', sans-serif;
-    font-size: clamp(12px, 4vmin, 18px);
-    font-weight: 800;
-    color: #1a3a6b;
-  }
-  .gregorian-line {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 15%;
-    margin: 0.5% 0 1%;
-    font-size: clamp(9px, 5vmin, 14px);
-    color: #1a3a6b;
-    font-weight: 700;
-    cursor: pointer;
-    /*flex-wrap: wrap;*/
-  }
-  .gregorian-line .badge {
-    background: #1a3a6b;
-  
-    color: white;
-	 border: 1px solid #1a3a6b;
-    padding: 0.3% 5%;
-    border-radius: 30px;
-    white-space: nowrap;
-  }
-  .gregorian-line .coptic {
-   /* font-size: clamp(9px, 3vmin, 13px);*/
-    border: 1px solid #1a3a6b;
-    padding: 0.3% 5%;
-    border-radius: 30px;
-   /* background: #f5f8fe;*/
-    white-space: nowrap;
-  }
-
-  .table-footer-container {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    min-height: 0;
-    gap: 1%;
-  }
-
-  .prayer-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: clamp(8px, 1.6vmin, 13px);
-    direction: rtl;
-    table-layout: fixed;
-    flex-shrink: 0;
-  }
-  .prayer-table th,
-  .prayer-table td {
-    padding: 1.5% 0.00%;
-    text-align: center;
-    border: 0.5px solid #c5cfe0;
-    color: #1a3a6b;
-    font-weight: 500;
-  }
-  .prayer-table th {
-    background: #eef2f9;
-    font-weight: 800;
-    font-size: clamp(8px, 3vmin, 12px);
-  }
-  .prayer-table td:first-child {
-    font-weight: 800;
-    background: #f8fafd;
-    font-size: clamp(8px, 2vmin, 12px);
-  }
-  .prayer-table td span {
-    font-weight: 800;
-    font-family: monospace;
-    font-size: clamp(8px, 3vmin, 12px);
-    letter-spacing: 0.3px;
-  }
-
-  .footer {
-    text-align: center;
-    font-family: 'Amiri', serif;
-    font-size: clamp(8px, 3vmin, 11px);
-    font-weight: 600;
-    color: #1a3a6b;
-    padding-top: 1%;
-    border-top: 1px solid #c5cfe0;
-    background: white;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    flex-shrink: 0;
-	
-  }
-
-  .datepicker-overlay {
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background: rgba(0,0,0,0.5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
-    font-family: 'Cairo', sans-serif;
-    direction: rtl;
-  }
-  .datepicker-modal {
-    background: white;
-    width: 330px;
-    max-width: 90%;
-    border-radius: 24px;
-    box-shadow: 0 20px 35px rgba(0,0,0,0.3);
-    padding: 14px;
-    text-align: center;
-  }
-  .year-month-control {
-    display: flex;
-    gap: 10px;
-    align-items: center;
-    background: #eef2f7;
-    padding: 5px 12px;
-    border-radius: 50px;
-    margin: 0 auto 12px;
-    width: fit-content;
-  }
-  .year-month-control button {
-    background: none;
-    border: none;
-    font-size: 18px;
-    font-weight: bold;
-    cursor: pointer;
-    padding: 2px 10px;
-    color: #1a3a6b;
-  }
-  .year-month-control span {
-    font-size: 15px;
-    font-weight: 800;
-    min-width: 110px;
-  }
-  .picker-grid {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 5px;
-    margin: 12px 0;
-  }
-  .picker-weekday {
-    font-size: 11px;
-    font-weight: bold;
-    color: #1a3a6b;
-    background: #eef2f7;
-    padding: 5px 0;
-    border-radius: 30px;
-  }
-  .picker-day {
-    background: #f9f9fc;
-    padding: 7px 0;
-    border-radius: 40px;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    color: #1f2e4a;
-  }
-  .picker-day.selected {
-    background: #1a3a6b;
-    color: white;
-  }
-  .picker-day.empty {
-    background: transparent;
-    cursor: default;
-  }
-  .picker-actions {
-    display: flex;
-    gap: 10px;
-    margin-top: 8px;
-  }
-  .picker-actions button {
-    flex: 1;
-    background: #1a3a6b;
-    border: none;
-    color: white;
-    padding: 7px;
-    border-radius: 40px;
-    font-weight: bold;
-    cursor: pointer;
-  }
-  .picker-actions button.outline {
-    background: #e0e5ec;
-    color: #1a3a6b;
-  }
-
-
-
-
-	.countdown-container {
-    background-color: #ffffff;
-    border: 2px solid #0f766e;
-    border-radius: 12px;
-    padding: 20px;
-    text-align: center;
-    max-width: 200px;
-    margin: 20px auto;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-    font-family: inherit;
-}
-.countdown-container h3 {
-    color: #0f766e;
-    margin-top: 0;
-    margin-bottom: 15px;
-    font-size: 1.2rem;
-}
-.timer-display {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    direction: ltr; /* لعرض الوقت بشكل صحيح من اليسار لليمين رقمياً */
-}
-.time-block {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    min-width: 30px;
-}
-.time-block span {
-    font-size: 2rem;
-    font-weight: bold;
-    color: #0f766e;
-}
-.time-block label {
-    font-size: 0.8rem;
-    color: #666;
-    margin-top: 4px;
-}
-.separator {
-    font-size: 2rem;
-    font-weight: bold;
-    color: #0f766e;
-    margin: 0 10px;
-    padding-bottom: 22px;
-}
-
-
-	
+ * {
+ margin: 0;
+ padding: 0;
+ box-sizing: border-box;
+ }
+ html, body {
+ width: 100%;
+ min-width: 0;
+ height: 100%;
+ overflow: hidden;
+ }
+ body {
+ background: #1a2a3a;
+ display: flex;
+ justify-content: center;
+ align-items: center;
+ font-family: 'Cairo', sans-serif;
+ padding: 0px;
+ }
+ .widget {
+ background: #ffffff;
+ width: 100%;
+ height: 100%;
+ min-width: 0;
+ border-radius: 12px;
+ box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+ overflow: hidden;
+ border: 1px solid #b0bfcf;
+ padding: 2% 2% 2%;
+ display: flex;
+ flex-direction: column;
+ justify-content: space-between;
+ }
+ .clickable-date {
+ cursor: pointer;
+ transition: opacity 0.1s;
+ }
+ .clickable-date:active {
+ opacity: 0.65;
+ }
+ .day-name-ar {
+ text-align: center;
+ font-family: 'Amiri', serif;
+ font-size: clamp(16px, 7vmin, 42px);
+ font-weight: 800;
+ color: #1a3a6b;
+ line-height: 1.1;
+ margin: 0 0 1% 0;
+ }
+ .day-name-en {
+ text-align: center;
+ font-size: clamp(9px, 3.2vmin, 16px);
+ font-weight: 700;
+ color: #1a3a6b;
+ border-radius: 30px;
+ border: 1.5px solid #1a3a6b;
+ display: inline-block;
+ padding: 0.3% 3%;
+ margin: 0 auto 1%;
+ width: fit-content;
+ letter-spacing: 0.5px;
+ background: white;
+ }
+ .dates-row {
+ display: flex;
+ border-top: 1.5px solid #1a3a6b;
+ border-bottom: 1.5px solid #1a3a6b;
+ margin: 1% 0 1.5%;
+ flex: 0 0 auto;
+ }
+ .date-block {
+ flex: 1;
+ text-align: center;
+ padding: 1% 2px;
+ cursor: pointer;
+ display: flex;
+ flex-direction: column;
+ align-items: center;
+ justify-content: center;
+ gap: 0.5%;
+ }
+ .date-block:first-child {
+ border-left: 1.5px solid #1a3a6b;
+ }
+ .date-num {
+ font-family: 'Amiri', serif;
+ font-size: clamp(24px, 15vmin, 60px);
+ font-weight: 800;
+ color: #1a3a6b;
+ line-height: 1;
+ }
+ .date-month-ar {
+ font-family: 'Amiri', serif;
+ font-size: clamp(11px, 5vmin, 18px);
+ font-weight: 700;
+ color: #1a3a6b;
+ padding: 0.3% 1%;
+ border-radius: 30px;
+ white-space: nowrap;
+ }
+ .date-month-syr {
+ font-family: 'Amiri', serif;
+ font-size: clamp(10px, 3.5vmin, 15px);
+ font-weight: 600;
+ color: #1a3a6b;
+ background: transparent;
+ opacity: 0.75;
+ white-space: nowrap;
+ }
+ .date-year {
+ font-family: 'Cairo', sans-serif;
+ font-size: clamp(12px, 4vmin, 18px);
+ font-weight: 800;
+ color: #1a3a6b;
+ }
+ .gregorian-line {
+ display: flex;
+ align-items: center;
+ justify-content: center;
+ gap: 15%;
+ margin: 0.5% 0 1%;
+ font-size: clamp(9px, 5vmin, 14px);
+ color: #1a3a6b;
+ font-weight: 700;
+ cursor: pointer;
+ }
+ .gregorian-line .badge {
+ background: #1a3a6b;
+ color: white;
+ border: 1px solid #1a3a6b;
+ padding: 0.3% 5%;
+ border-radius: 30px;
+ white-space: nowrap;
+ }
+ .gregorian-line .coptic {
+ border: 1px solid #1a3a6b;
+ padding: 0.3% 5%;
+ border-radius: 30px;
+ white-space: nowrap;
+ }
+ .table-footer-container {
+ flex: 1;
+ display: flex;
+ flex-direction: column;
+ min-height: 0;
+ gap: 1%;
+ }
+ .prayer-table {
+ width: 100%;
+ border-collapse: collapse;
+ font-size: clamp(8px, 1.6vmin, 13px);
+ direction: rtl;
+ table-layout: fixed;
+ flex-shrink: 0;
+ }
+ .prayer-table th,
+ .prayer-table td {
+ padding: 1.5% 0.00%;
+ text-align: center;
+ border: 0.5px solid #c5cfe0;
+ color: #1a3a6b;
+ font-weight: 500;
+ }
+ .prayer-table th {
+ background: #eef2f9;
+ font-weight: 800;
+ font-size: clamp(8px, 3vmin, 12px);
+ }
+ .prayer-table td:first-child {
+ font-weight: 800;
+ background: #f8fafd;
+ font-size: clamp(8px, 2vmin, 12px);
+ }
+ .prayer-table td span {
+ font-weight: 800;
+ font-family: monospace;
+ font-size: clamp(8px, 3vmin, 12px);
+ letter-spacing: 0.3px;
+ }
+ .footer {
+ text-align: center;
+ font-family: 'Amiri', serif;
+ font-size: clamp(8px, 3vmin, 11px);
+ font-weight: 600;
+ color: #1a3a6b;
+ padding-top: 1%;
+ border-top: 1px solid #c5cfe0;
+ background: white;
+ white-space: nowrap;
+ overflow: hidden;
+ text-overflow: ellipsis;
+ flex-shrink: 0;
+ }
+ .datepicker-overlay {
+ position: fixed;
+ top: 0; left: 0;
+ width: 100%; height: 100%;
+ background: rgba(0,0,0,0.5);
+ display: flex;
+ align-items: center;
+ justify-content: center;
+ z-index: 1000;
+ font-family: 'Cairo', sans-serif;
+ direction: rtl;
+ }
+ .datepicker-modal {
+ background: white;
+ width: 330px;
+ max-width: 90%;
+ border-radius: 24px;
+ box-shadow: 0 20px 35px rgba(0,0,0,0.3);
+ padding: 14px;
+ text-align: center;
+ }
+ .year-month-control {
+ display: flex;
+ gap: 10px;
+ align-items: center;
+ background: #eef2f7;
+ padding: 5px 12px;
+ border-radius: 50px;
+ margin: 0 auto 12px;
+ width: fit-content;
+ }
+ .year-month-control button {
+ background: none;
+ border: none;
+ font-size: 18px;
+ font-weight: bold;
+ cursor: pointer;
+ padding: 2px 10px;
+ color: #1a3a6b;
+ }
+ .year-month-control span {
+ font-size: 15px;
+ font-weight: 800;
+ min-width: 110px;
+ }
+ .picker-grid {
+ display: grid;
+ grid-template-columns: repeat(7, 1fr);
+ gap: 5px;
+ margin: 12px 0;
+ }
+ .picker-weekday {
+ font-size: 11px;
+ font-weight: bold;
+ color: #1a3a6b;
+ background: #eef2f7;
+ padding: 5px 0;
+ border-radius: 30px;
+ }
+ .picker-day {
+ background: #f9f9fc;
+ padding: 7px 0;
+ border-radius: 40px;
+ font-size: 13px;
+ font-weight: 600;
+ cursor: pointer;
+ color: #1f2e4a;
+ }
+ .picker-day.selected {
+ background: #1a3a6b;
+ color: white;
+ }
+ .picker-day.empty {
+ background: transparent;
+ cursor: default;
+ }
+ .picker-actions {
+ display: flex;
+ gap: 10px;
+ margin-top: 8px;
+ }
+ .picker-actions button {
+ flex: 1;
+ background: #1a3a6b;
+ border: none;
+ color: white;
+ padding: 7px;
+ border-radius: 40px;
+ font-weight: bold;
+ cursor: pointer;
+ }
+ .picker-actions button.outline {
+ background: #e0e5ec;
+ color: #1a3a6b;
+ }
+ 
+ /* 🟩 تعديل: حاوية العداد التنازلي المصغرة والمدمجة لتناسب تطبيق الهاتف */
+ .countdown-container {
+ background-color: #f0fdf4;
+ border: 1px solid #0f766e;
+ border-radius: 8px;
+ padding: 6px 12px;
+ text-align: center;
+ max-width: 280px;
+ margin: 4px auto;
+ box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
+ }
+ .countdown-container h3 {
+ color: #0f766e;
+ margin: 0 0 2px 0;
+ font-size: 0.9rem;
+ font-weight: 700;
+ }
+ .timer-display {
+ display: flex;
+ justify-content: center;
+ align-items: center;
+ direction: ltr;
+ }
+ .time-block {
+ display: flex;
+ flex-direction: column;
+ align-items: center;
+ min-width: 32px;
+ }
+ .time-block span {
+ font-size: 1.15rem;
+ font-weight: 800;
+ color: #0f766e;
+ line-height: 1.2;
+ }
+ .time-block label {
+ font-size: 0.65rem;
+ color: #0f766e;
+ opacity: 0.8;
+ margin-top: -1px;
+ }
+ .separator {
+ font-size: 1.1rem;
+ font-weight: 800;
+ color: #0f766e;
+ margin: 0 4px;
+ padding-bottom: 12px;
+ }
 </style>
 </head>
 <body>
+
 <!-- زر التثبيت المخصص (سيكون مخفياً حتى يتأكد المتصفح من جاهزية التطبيق) -->
-<button id="pwaInstallBtn" style="display: none; background-color: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-family: inherit;">
-   تثبيت تطبيق مواقيت الصلاة على جهازك
+<button id="pwaInstallBtn" style="display: none; background-color: #0f766e; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-family: inherit; position: fixed; top: 10px; z-index: 1001;">
+تثبيت تطبيق مواقيت الصلاة على جهازك
 </button>
 
 <div class="widget" id="widget">
-  <div class="day-name-ar clickable-date" id="dayAr">...</div>
-  <div class="day-name-en clickable-date" id="dayEn">...</div>
-  <div class="dates-row">
-    <div class="date-block clickable-date" id="gregBlock">
-      <span class="date-num" id="gregDay">...</span>
-      <span class="date-month-ar" id="gregMonth">...</span>
-      <span class="date-month-syr" id="syriacMonth">-</span>
-      <span class="date-year" id="gregYear">...</span>
-    </div>
-    <div class="date-block clickable-date" id="hijriBlock">
-      <span class="date-num" id="hijriDay">...</span>
-      <span class="date-month-ar" id="hijriMonth">...</span>
-      <span class="date-year" id="hijriYear">...</span>
-    </div>
-  </div>
-  <div class="gregorian-line clickable-date" id="gregLineFullBlock">
-    
-    <span class="badge" id="gregLineFull">...</span>
-	<span id="copticSpan" class="coptic">...</span>
-  </div>
+ <div class="day-name-ar clickable-date" id="dayAr">...</div>
+ <div class="day-name-en clickable-date" id="dayEn">...</div>
+ <div class="dates-row">
+ <div class="date-block clickable-date" id="gregBlock">
+ <span class="date-num" id="gregDay">...</span>
+ <span class="date-month-ar" id="gregMonth">...</span>
+ <span class="date-month-syr" id="syriacMonth">-</span>
+ <span class="date-year" id="gregYear">...</span>
+ </div>
+ <div class="date-block clickable-date" id="hijriBlock">
+ <span class="date-num" id="hijriDay">...</span>
+ <span class="date-month-ar" id="hijriMonth">...</span>
+ <span class="date-year" id="hijriYear">...</span>
+ </div>
+ </div>
+ <div class="gregorian-line clickable-date" id="gregLineFullBlock">
+ <span class="badge" id="gregLineFull">...</span>
+ <span id="copticSpan" class="coptic">...</span>
+ </div>
 
+ <!-- حاوية العداد التنازلي المصغرة والمعدلة للصلاة القادمة -->
+ <div id="countdown-card" class="countdown-container">
+ <h3 id="next-prayer-title">الصلاة القادمة: --</h3>
+ <div class="timer-display">
+ <div class="time-block">
+ <span id="timer-hours">00</span>
+ <label>ساعة</label>
+ </div>
+ <span class="separator">:</span>
+ <div class="time-block">
+ <span id="timer-minutes">00</span>
+ <label>دقيقة</label>
+ </div>
+ <span class="separator">:</span>
+ <div class="time-block">
+ <span id="timer-seconds">00</span>
+ <label>ثانية</label>
+ </div>
+ </div>
+ </div>
 
-	
-<!-- حاوية العداد التنازلي للصلاة القادمة -->
-<div id="countdown-card" class="countdown-container">
-    <h3 id="next-prayer-title">الصلاة القادمة: --</h3>
-    <div class="timer-display">
-        <div class="time-block">
-            <span id="timer-hours">00</span>
-            <label>ساعة</label>
-        </div>
-        <span class="separator">:</span>
-        <div class="time-block">
-            <span id="timer-minutes">00</span>
-            <label>دقيقة</label>
-        </div>
-        <span class="separator">:</span>
-        <div class="time-block">
-            <span id="timer-seconds">00</span>
-            <label>ثانية</label>
-        </div>
-    </div>
+ <div class="table-footer-container">
+ <table class="prayer-table">
+ <thead>
+ <tr>
+ <th>المدينة</th>
+ <th>فجر</th>
+ <th>شروق</th>
+ <th>ظهر</th>
+ <th>عصر</th>
+ <th>مغرب</th>
+ <th>عشاء</th>
+ </tr>
+ </thead>
+ <tbody id="prayerBody"></tbody>
+ </table>
+ <div class="footer">Mekkawy | المذهب الشافعي | تقويم هيئة المساحة المصرية</div>
+ </div>
 </div>
-<!-- --------- -->
-  <div class="table-footer-container">
-    <table class="prayer-table">
-      <thead>
-        <tr><th>المواقيت</th><th>فجر</th><th>شروق</th><th>ظهر</th><th>عصر</th><th>مغرب</th><th>عشاء</th></tr>
-      </thead>
-      <tbody id="prayerBody"></tbody>
-    </table>
-    <div class="footer">Mekkawy | المذهب الشافعي | تقويم هيئة المساحة المصرية</div>
-  </div>
-</div>
-
 <script>
-// متغير لتخزين حدث التثبيت لاستخدامه لاحقاً
-let deferredPrompt; 
-const installBtn = document.getElementById('pwaInstallBtn');
-
-// 1. الاستماع لحدث التثبيت التلقائي من المتصفح
-window.addEventListener('beforeinstallprompt', (e) => {
-  // منع المتصفح من إظهار نافذة التثبيت الافتراضية فوراً
-  e.preventDefault();
-  
-  // حفظ الحدث في المتغير لكي نقوم باستدعائه عندما يضغط المستخدم على زرنا المخصص
-  deferredPrompt = e;
-  
-  // إظهار زر التثبيت المخصص للمستخدم الآن بعدما تأكدنا أن التطبيق جاهز للتثبيت
-  installBtn.style.display = 'block';
-  
-  console.log("'beforeinstallprompt' Event fired & captured successfully.");
-});
-
-// 2. معالجة الضغط على زر التثبيت المخصص
-installBtn.addEventListener('click', async () => {
-  if (!deferredPrompt) return;
-  
-  // إظهار نافذة التثبيت الخاصة بالمتصفح (المنبثقة)
-  deferredPrompt.prompt();
-  
-  // انتظار رد فعل المستخدم (هل وافق على التثبيت أم رفض؟)
-  const { outcome } = await deferredPrompt.userChoice;
-  console.log(`User response to install prompt: ${outcome}`);
-  
-  // تنظيف المتغير لأن الحدث لا يمكن استخدامه سوى مرة واحدة
-  deferredPrompt = null;
-  
-  // إخفاء زر التثبيت مجدداً لأن العملية تمت أو تم التعامل معها
-  installBtn.style.display = 'none';
-});
-
-// 3. الاستماع لحدث إتمام التثبيت بنجاح (اختياري - مفيد للإحصائيات)
-window.addEventListener('appinstalled', (event) => {
-  console.log('تطبيق مواقيت الصلاة تم تثبيته بنجاح على الجهاز!');
-  // هنا يمكنك إخفاء أي عناصر واجهة مستخدم إضافية متعلقة بالتثبيت
-  installBtn.style.display = 'none';
-});
-
-
-	
-// ======================== البيانات الأساسية ========================
-
-
-
+// ==========================================
+// 1. البيانات والثوابت الأساسية للتطبيق
+// ==========================================
 const CITIES = [
-  { name: 'القاهرة', lat: 30.0444, lng: 31.2357 },
-  { name: 'الإسكندرية', lat: 31.2001, lng: 29.9187 },
-  { name: 'المنصورة', lat: 31.0364, lng: 31.3807 },
-  { name: 'أسوان', lat: 24.0889, lng: 32.8998 },
+ { name: 'القاهرة', lat: 30.0444, lng: 31.2357 },
+ { name: 'الإسكندرية', lat: 31.2001, lng: 29.9187 },
+ { name: 'المنصورة', lat: 31.0364, lng: 31.3807 },
+ { name: 'أسوان', lat: 24.0889, lng: 32.8998 }
 ];
 
 const AR_DAYS = ['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
@@ -499,31 +436,36 @@ const EN_DAYS = ['SUNDAY','MONDAY','TUESDAY','WEDNESDAY','THURSDAY','FRIDAY','SA
 const AR_MONTHS_G = ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
 const EN_MONTHS = ['JANUARY','FEBRUARY','MARCH','APRIL','MAY','JUNE','JULY','AUGUST','SEPTEMBER','OCTOBER','NOVEMBER','DECEMBER'];
 const AR_MONTHS_SYRIAC = ['كانون الثاني','شباط','آذار','نيسان','أيار','حزيران','تموز','آب','أيلول','تشرين الأول','تشرين الثاني','كانون الأول'];
-const AR_MONTHS_H = ['محرم','صفر','ربيع الأول','ربيع الآخر','جمادى الأولى','جمادى الآخرة','رجب','شعبان','رمضان','شوال','ذو القعدة','ذو الحجة'];
+const H_MONTHS_AR = ['محرم','صفر','ربيع الأول','ربيع الآخر','جمادى الأولى','جمادى الآخرة','رجب','شعبان','رمضان','شوال','ذو القعدة','ذو الحجة'];
 const COPTIC_MONTHS = ['توت','بابه','هاتور','كيهك','طوبه','أمشير','برمهات','برموده','بشنس','بؤونه','أبيب','مسرى','النسيء'];
 
-function toAr(n) { return String(n).replace(/\d/g, d => '٠١٢٣٤٥٦٧٨٩'[d]); }
-
-function convertTo12HourFormat(time24) {
-  if (!time24 || time24 === '--:--') return '--:--';
-  let [hours, minutes] = time24.split(':');
-  let h = parseInt(hours);
-  let h12 = h % 12;
-  if (h12 === 0) h12 = 12;
-  return `${minutes} ${h12}`;
+// تحويل الأرقام الإنجليزية إلى عربية
+function toAr(n) { 
+  return String(n).replace(/\d/g, d => '٠١٢٣٤٥٦٧٨٩'[d]); 
 }
 
+// تحويل الوقت من نظام 24 ساعة إلى نظام 12 ساعة المدني للعرض في الجدول
+function convertTo12HourFormat(time24) {
+ if (!time24 || time24 === '--:--') return '--:--';
+ let [hours, minutes] = time24.split(':');
+ let h = parseInt(hours);
+ let h12 = h % 12;
+ if (h12 === 0) h12 = 12;
+ return `${minutes} ${h12}`;
+}
+
+// حساب التقويم القبطي يدوياً بدقة
 function toCoptic(date) {
-  let copticYear = date.getFullYear() - 283;
-  let copticNewYear = new Date(date.getFullYear(), 8, 11);
-  if (date < copticNewYear) {
-    copticYear--;
-    copticNewYear = new Date(date.getFullYear() - 1, 8, 11);
-  }
-  const dayDiff = Math.floor((date - copticNewYear) / 86400000);
-  const month = Math.floor(dayDiff / 30);
-  const day = dayDiff % 30 + 1;
-  return { day, month, year: copticYear };
+ let copticYear = date.getFullYear() - 283;
+ let copticNewYear = new Date(date.getFullYear(), 8, 11);
+ if (date < copticNewYear) {
+ copticYear--;
+ copticNewYear = new Date(date.getFullYear() - 1, 8, 11);
+ }
+ const dayDiff = Math.floor((date - copticNewYear) / 86400000);
+ const month = Math.floor(dayDiff / 30);
+ const day = dayDiff % 30 + 1;
+ return { day, month, year: copticYear };
 }
 
 let currentDisplayDate = new Date();
@@ -531,285 +473,130 @@ let activePickerDate = new Date();
 let isLoading = false;
 let saveTimer = null;
 
-// ======================== حفظ واستعادة مكان وحجم النافذة ========================
-const WINDOW_STORAGE_KEY = 'islamic_calendar_window';
+// ==========================================
+// 2. دوال الـ API وجلب التواقيت بنجاح
+// ==========================================
 
-function saveWindowState() {
-  try {
-    // التحقق من أن النافذة مرئية (ليست مصغرة بالكامل)
-    if (window.screenX > -10000 && window.screenY > -10000 && window.outerWidth > 100 && window.outerHeight > 100) {
-      const state = {
-        x: window.screenX,
-        y: window.screenY,
-        width: window.outerWidth,
-        height: window.outerHeight
-      };
-      localStorage.setItem(WINDOW_STORAGE_KEY, JSON.stringify(state));
-      // تحديث عنوان الصفحة بالأبعاد الحالية اختياري
-      document.title = `التقويم الإسلامي - ${state.width}×${state.height}`;
-    }
-  } catch(e) { console.warn('Could not save window state:', e); }
-}
-
-function restoreWindowState() {
-  const saved = localStorage.getItem(WINDOW_STORAGE_KEY);
-  if (saved) {
-    try {
-      const state = JSON.parse(saved);
-      // التحقق من أن الأبعاد معقولة (أكبر من 300 وأصغر من 2000)
-      if (state.width && state.height && state.width > 300 && state.width < 2000 && state.height > 300 && state.height < 2000) {
-        // التحقق من عدم خروج النافذة عن حدود الشاشة
-        const maxX = window.screen.availWidth - 100;
-        const maxY = window.screen.availHeight - 100;
-        const x = Math.min(Math.max(state.x, 0), maxX);
-        const y = Math.min(Math.max(state.y, 0), maxY);
-        
-        window.resizeTo(state.width, state.height);
-        setTimeout(() => window.moveTo(x, y), 50);
-        document.title = `التقويم الإسلامي - ${state.width}×${state.height}`;
-        return true;
-      }
-    } catch(e) { console.warn('Could not restore window state:', e); }
-  }
-  return false;
-}
-
-function initWindowPersistence() {
-  // محاولة استعادة الحجم والمكان المحفوظين
-  const restored = restoreWindowState();
-  
-  // إذا لم يكن هناك حجم محفوظ، نضبط حجم أولي مناسب (480×500)
-  if (!restored) {
-    window.resizeTo(480, 500);
-    document.title = 'التقويم الإسلامي - 480×500';
-  }
-  
-  // حفظ الحجم والمكان عند تغيير الحجم أو تحريك النافذة
-  window.addEventListener('resize', () => {
-    clearTimeout(saveTimer);
-    saveTimer = setTimeout(saveWindowState, 500);
-  });
-  
-  window.addEventListener('move', () => {
-    clearTimeout(saveTimer);
-    saveTimer = setTimeout(saveWindowState, 500);
-  });
-  
-  window.addEventListener('beforeunload', saveWindowState);
-}
-
-// ======================== دوال API ========================
+// جلب التاريخ الهجري
 async function fetchHijriDate(date) {
-  const y = date.getFullYear(), m = date.getMonth()+1, d = date.getDate();
-  try {
-    const resp = await fetch(`https://api.aladhan.com/v1/gToH/${d}-${m}-${y}`);
-    const data = await resp.json();
-    if(data.code === 200 && data.data) {
-      const hij = data.data.hijri;
-      return { day: parseInt(hij.day), monthName: hij.month.ar, year: parseInt(hij.year) };
-    }
-    return null;
-  } catch(e) { return null; }
+ const y = date.getFullYear(), m = date.getMonth()+1, d = date.getDate();
+ try {
+ const resp = await fetch(`https://aladhan.com{d}-${m}-${y}`);
+ const data = await resp.json();
+ if(data.code === 200 && data.data) {
+ const hij = data.data.hijri;
+ return { day: parseInt(hij.day), monthName: hij.month.ar, year: parseInt(hij.year) };
+ }
+ return null;
+ } catch(e) { return null; }
 }
 
+// جلب مواقيت الصلاة وفصل النسخة الخام (24 ساعة) عن نسخة العرض (12 ساعة)
 async function fetchPrayerTimes(date, city) {
-  const y = date.getFullYear(), m = date.getMonth()+1, d = date.getDate();
-  
-  try {
-    const resp = await fetch(`https://api.aladhan.com/v1/timings/${d}-${m}-${y}?latitude=${city.lat}&longitude=${city.lng}&method=5&school=0&midnightMode=1`);
-    const data = await resp.json();
-    if(data.code === 200 && data.data) {
-      const t = data.data.timings;
-      return {
-        fajr: convertTo12HourFormat(t.Fajr.slice(0,5)),
-        sunrise: convertTo12HourFormat(t.Sunrise.slice(0,5)),
-        dhuhr: convertTo12HourFormat(t.Dhuhr.slice(0,5)),
-        asr: convertTo12HourFormat(t.Asr.slice(0,5)),
-        maghrib: convertTo12HourFormat(t.Maghrib.slice(0,5)),
-        isha: convertTo12HourFormat(t.Isha.slice(0,5))
-      };
-    }
-    return null;
-  } catch(e) { return null; }
+ const y = date.getFullYear(), m = date.getMonth()+1, d = date.getDate();
+ try {
+ // الالتزام التام بمعايير المساحة المصرية: method=5, school=0, midnightMode=1
+ const resp = await fetch(`https://aladhan.com{d}-${m}-${y}?latitude=${city.lat}&longitude=${city.lng}&method=5&school=0&midnightMode=1`);
+ const data = await resp.json();
+ if(data.code === 200 && data.data) {
+ const t = data.data.timings;
+ return {
+   // الصيغة الخام 24 ساعة من أجل تغذية دالة العداد التنازلي بدقة وبدون تجميد كود
+   raw: {
+     Fajr: t.Fajr.slice(0,5),
+     Sunrise: t.Sunrise.slice(0,5),
+     Dhuhr: t.Dhuhr.slice(0,5),
+     Asr: t.Asr.slice(0,5),
+     Maghrib: t.Maghrib.slice(0,5),
+     Isha: t.Isha.slice(0,5)
+   },
+   // الصيغة المدنية 12 ساعة المخصصة للعرض داخل جدول المواقيت الرئيسي
+   display: {
+     fajr: convertTo12HourFormat(t.Fajr.slice(0,5)),
+     sunrise: convertTo12HourFormat(t.Sunrise.slice(0,5)),
+     dhuhr: convertTo12HourFormat(t.Dhuhr.slice(0,5)),
+     asr: convertTo12HourFormat(t.Asr.slice(0,5)),
+     maghrib: convertTo12HourFormat(t.Maghrib.slice(0,5)),
+     isha: convertTo12HourFormat(t.Isha.slice(0,5))
+   }
+ };
+ }
+ return null;
+ } catch(e) { return null; }
 }
 
-// ======================== عرض البيانات ========================
+// ==========================================
+// 3. دالات تحديث وتوزيع البيانات على الشاشة
+// ==========================================
 function updateGregorianDisplay(date) {
-  document.getElementById('dayAr').innerText = AR_DAYS[date.getDay()];
-  document.getElementById('dayEn').innerText = EN_DAYS[date.getDay()];
-  document.getElementById('gregDay').innerText = toAr(date.getDate());
-  document.getElementById('gregMonth').innerText = AR_MONTHS_G[date.getMonth()];
-  document.getElementById('syriacMonth').innerText = AR_MONTHS_SYRIAC[date.getMonth()];
-  document.getElementById('gregYear').innerText = toAr(date.getFullYear());
-  document.getElementById('gregLineFull').innerText = `${date.getDate()} ${EN_MONTHS[date.getMonth()]} ${date.getFullYear()}`;
-  const cop = toCoptic(date);
-  document.getElementById('copticSpan').innerText = `${toAr(cop.day)} ${COPTIC_MONTHS[cop.month % 13]} ${toAr(cop.year)}`;
+ document.getElementById('dayAr').innerText = AR_DAYS[date.getDay()];
+ document.getElementById('dayEn').innerText = EN_DAYS[date.getDay()];
+ document.getElementById('gregDay').innerText = toAr(date.getDate());
+ document.getElementById('gregMonth').innerText = AR_MONTHS_G[date.getMonth()];
+ document.getElementById('syriacMonth').innerText = AR_MONTHS_SYRIAC[date.getMonth()];
+ document.getElementById('gregYear').innerText = toAr(date.getFullYear());
+ document.getElementById('gregLineFull').innerText = `${date.getDate()} ${EN_MONTHS[date.getMonth()]} ${date.getFullYear()}`;
+ const cop = toCoptic(date);
+ document.getElementById('copticSpan').innerText = `${toAr(cop.day)} ${COPTIC_MONTHS[cop.month % 13]} ${toAr(cop.year)}`;
 }
 
 function updateHijriDisplay(hijri) {
-  if(hijri) {
-    document.getElementById('hijriDay').innerText = toAr(hijri.day);
-    document.getElementById('hijriMonth').innerText = hijri.monthName;
-    document.getElementById('hijriYear').innerText = toAr(hijri.year);
-  }
+ if(hijri) {
+ document.getElementById('hijriDay').innerText = toAr(hijri.day);
+ document.getElementById('hijriMonth').innerText = hijri.monthName;
+ document.getElementById('hijriYear').innerText = toAr(hijri.year);
+ }
 }
 
 function updatePrayerTableDisplay(prayers) {
-  const tbody = document.getElementById('prayerBody');
-  tbody.innerHTML = '';
-  for(let i=0; i<CITIES.length; i++) {
-    const p = prayers[i];
-    const row = tbody.insertRow();
-    row.insertCell(0).innerText = CITIES[i].name;
-    if(p) {
-      row.insertCell(1).innerHTML = `<span>${p.fajr}</span>`;
-      row.insertCell(2).innerHTML = `<span>${p.sunrise}</span>`;
-      row.insertCell(3).innerHTML = `<span>${p.dhuhr}</span>`;
-      row.insertCell(4).innerHTML = `<span>${p.asr}</span>`;
-      row.insertCell(5).innerHTML = `<span>${p.maghrib}</span>`;
-      row.insertCell(6).innerHTML = `<span>${p.isha}</span>`;
-    } else {
-      let cell = row.insertCell(1);
-      cell.colSpan = 6;
-      cell.innerText = 'خطأ';
-      cell.style.textAlign = 'center';
-    }
-  }
-}
-
-	
-async function refreshWidget(targetDate) {
-  if(isLoading) return;
-  isLoading = true;
-  const date = targetDate || currentDisplayDate;
-  updateGregorianDisplay(date);
-  try {
-    const hijri = await fetchHijriDate(date);
-    if(hijri) updateHijriDisplay(hijri);
-    const allPrayers = await Promise.all(CITIES.map(c => fetchPrayerTimes(date, c)));
-    updatePrayerTableDisplay(allPrayers);
-  } catch(e) { console.warn(e); }
-  isLoading = false;
-}
-
-// ======================== منتقي التاريخ ========================
-let pickerModal = null;
-function openDatePicker() { activePickerDate = new Date(currentDisplayDate); renderPicker(); }
-function closePicker() { if(pickerModal) pickerModal.remove(); pickerModal = null; }
-
-function renderPicker() {
-  if(pickerModal) pickerModal.remove();
-  const overlay = document.createElement('div');
-  overlay.className = 'datepicker-overlay';
-  const y = activePickerDate.getFullYear(), m = activePickerDate.getMonth();
-  const firstDay = new Date(y, m, 1).getDay();
-  const daysInMonth = new Date(y, m+1, 0).getDate();
-  let grid = [];
-  for(let i=0; i<firstDay; i++) grid.push(null);
-  for(let d=1; d<=daysInMonth; d++) grid.push(new Date(y, m, d));
-  while(grid.length % 7 !== 0) grid.push(null);
-  const weekdays = ['أحد','إثنين','ثلاثاء','أربعاء','خميس','جمعة','سبت'];
-  overlay.innerHTML = `
-    <div class="datepicker-modal">
-      <div class="year-month-control">
-        <button id="prevYear">««</button><button id="prevMonth">‹</button>
-        <span id="monthYear">${AR_MONTHS_G[m]} ${toAr(y)}</span>
-        <button id="nextMonth">›</button><button id="nextYear">»»</button>
-      </div>
-      <div class="picker-grid" id="pickerGrid"></div>
-      <div class="picker-actions">
-        <button id="todayBtn">📅 اليوم</button>
-        <button id="closeBtn" class="outline">إلغاء</button>
-      </div>
-    </div>
-  `;
-  document.body.appendChild(overlay);
-  pickerModal = overlay;
-  
-  function buildGrid() {
-    const container = document.getElementById('pickerGrid');
-    container.innerHTML = '';
-    weekdays.forEach(wd => { let d=document.createElement('div'); d.className='picker-weekday'; d.innerText=wd; container.appendChild(d); });
-    grid.forEach(dt => {
-      let div = document.createElement('div'); div.className = 'picker-day';
-      if(!dt) { div.classList.add('empty'); div.innerText = ''; }
-      else {
-        div.innerText = toAr(dt.getDate());
-        if(dt.toDateString() === currentDisplayDate.toDateString()) div.classList.add('selected');
-        div.onclick = async () => { currentDisplayDate = new Date(dt); await refreshWidget(currentDisplayDate); closePicker(); };
-      }
-      container.appendChild(div);
-    });
-  }
-  
-  function updateGrid() {
-    const ny = activePickerDate.getFullYear(), nm = activePickerDate.getMonth();
-    document.getElementById('monthYear').innerText = `${AR_MONTHS_G[nm]} ${toAr(ny)}`;
-    const fd = new Date(ny, nm, 1).getDay(), dim = new Date(ny, nm+1, 0).getDate();
-    let ng = [];
-    for(let i=0; i<fd; i++) ng.push(null);
-    for(let d=1; d<=dim; d++) ng.push(new Date(ny, nm, d));
-    while(ng.length % 7 !== 0) ng.push(null);
-    grid = ng; buildGrid();
-  }
-  
-  document.getElementById('prevMonth').onclick = () => { activePickerDate.setMonth(activePickerDate.getMonth()-1); updateGrid(); };
-  document.getElementById('nextMonth').onclick = () => { activePickerDate.setMonth(activePickerDate.getMonth()+1); updateGrid(); };
-  document.getElementById('prevYear').onclick = () => { activePickerDate.setFullYear(activePickerDate.getFullYear()-1); updateGrid(); };
-  document.getElementById('nextYear').onclick = () => { activePickerDate.setFullYear(activePickerDate.getFullYear()+1); updateGrid(); };
-  document.getElementById('todayBtn').onclick = async () => { currentDisplayDate = new Date(); await refreshWidget(currentDisplayDate); closePicker(); };
-  document.getElementById('closeBtn').onclick = closePicker;
-  overlay.onclick = (e) => { if(e.target === overlay) closePicker(); };
-  buildGrid();
+ const tbody = document.getElementById('prayerBody');
+ tbody.innerHTML = '';
+ for(let i=0; i<CITIES.length; i++) {
+ const p = prayers[i];
+ const row = tbody.insertRow();
+ row.insertCell(0).innerText = CITIES[i].name;
+ if(p && p.display) {
+ row.insertCell(1).innerHTML = `<span>${p.display.fajr}</span>`;
+ row.insertCell(2).innerHTML = `<span>${p.display.sunrise}</span>`;
+ row.insertCell(3).innerHTML = `<span>${p.display.dhuhr}</span>`;
+ row.insertCell(4).innerHTML = `<span>${p.display.asr}</span>`;
+ row.insertCell(5).innerHTML = `<span>${p.display.maghrib}</span>`;
+ row.insertCell(6).innerHTML = `<span>${p.display.isha}</span>`;
+ } else {
+ let cell = row.insertCell(1);
+ cell.colSpan = 6;
+ cell.innerText = 'خطأ';
+ cell.style.textAlign = 'center';
+ }
+ }
 }
 
 
+// متغير عام لتخزين معرف العداد التنازلي الحالي ومنع تداخله عند تحديث البيانات
+let countdownIntervalId = null;
 
-
-	// مصفوفة بأسماء الصلوات لترتيب عملية البحث عن الصلاة القادمة
-const prayerNames = ['Fajr', 'Sunrise', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'];
-const prayerArabicNames = {
-    'Fajr': 'الفجر', 'Sunrise': 'الشروق', 'Dhuhr': 'الظهر', 
-    'Asr': 'العصر', 'Maghrib': 'المغرب', 'Isha': 'العشاء'
-};
-
+// ==========================================
+// 4. منطق العداد التنازلي التلقائي المصحح
+// ==========================================
 function startCountdown(prayerTimes) {
-    function cleanTime(timeStr) {
-        if (!timeStr) return "00:00";
-        let clean = timeStr.replace(/[^\d:apm\s]/gi, '').trim();
-        
-        if (clean.toLowerCase().includes('am') || clean.toLowerCase().includes('pm')) {
-            let isPM = clean.toLowerCase().includes('pm');
-            let timeParts = clean.replace(/(am|pm)/i, '').trim().split(':');
-            let hours = parseInt(timeParts[0]);
-            let minutes = timeParts[1]; //  تم تصحيح القوس هنا [1] لضمان جلب الدقائق
-            
-            if (isPM && hours < 12) hours += 12;
-            if (!isPM && hours === 12) hours = 0;
-            
-            return `${String(hours).padStart(2, '0')}:${minutes}`;
-        }
-        return clean.split(':').slice(0, 2).join(':');
-    }
-
     const prayerNames = ['Fajr', 'Sunrise', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'];
     const prayerArabicNames = {
         'Fajr': 'الفجر', 'Sunrise': 'الشروق', 'Dhuhr': 'الظهر', 
         'Asr': 'العصر', 'Maghrib': 'المغرب', 'Isha': 'العشاء'
     };
 
-    setInterval(() => {
+    // تشغيل وتحديث العداد كل ثانية واحدة وحفظ المعرف
+    countdownIntervalId = setInterval(() => {
         const now = new Date();
         let nextPrayerName = '';
         let nextPrayerTime = null;
 
+        // البحث عن الصلاة القادمة المتبقية في اليوم الحالي
         for (let name of prayerNames) {
-            const timeString = prayerTimes[name] || prayerTimes.timings?.[name];
+            const timeString = prayerTimes[name];
             if (!timeString) continue;
 
-            const formattedTime = cleanTime(timeString);
-            const [hours, minutes] = formattedTime.split(':');
-            
+            const [hours, minutes] = timeString.split(':');
             const prayerDate = new Date(now);
             prayerDate.setHours(parseInt(hours), parseInt(minutes), 0, 0);
 
@@ -820,22 +607,27 @@ function startCountdown(prayerTimes) {
             }
         }
 
+        // إذا انتهت كل صلوات اليوم الحالي، فالصلاة القادمة هي فجر اليوم التالي تلقائياً
         if (!nextPrayerTime) {
             nextPrayerName = 'Fajr';
-            const timeString = prayerTimes['Fajr'] || prayerTimes.timings?.['Fajr'];
-            const formattedTime = cleanTime(timeString);
-            const [hours, minutes] = formattedTime.split(':');
-            
-            nextPrayerTime = new Date(now);
-            nextPrayerTime.setDate(now.getDate() + 1);
-            nextPrayerTime.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+            const timeString = prayerTimes['Fajr'];
+            if (timeString) {
+                const [hours, minutes] = timeString.split(':');
+                nextPrayerTime = new Date(now);
+                nextPrayerTime.setDate(now.getDate() + 1); // الانتقال للغد
+                nextPrayerTime.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+            }
         }
 
+        if (!nextPrayerTime) return; // تأمين الكود في حال غياب البيانات
+
+        // حساب الفارق الزمني بدقة بالميلي ثانية
         const diff = nextPrayerTime - now;
         const hours = Math.floor(diff / (1000 * 60 * 60));
         const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
         const seconds = Math.floor((diff % (1000 * 60)) / 1000);
 
+        // تحديث واجهات الـ HTML وعناصر العداد التنازلي المصغر
         const titleEl = document.getElementById('next-prayer-title');
         const hEl = document.getElementById('timer-hours');
         const mEl = document.getElementById('timer-minutes');
@@ -849,75 +641,206 @@ function startCountdown(prayerTimes) {
     }, 1000);
 }
 
-
-
-// ======================== تفعيل الأحداث ========================
-function attachEvents() {
-  ['dayAr','dayEn','gregBlock','hijriBlock','gregLineFullBlock'].forEach(id => {
-    const el = document.getElementById(id);
-    if(el) el.addEventListener('click', openDatePicker);
-  });
+// دالة إنعاش المصغر وجلب وتوزيع البيانات وربط العداد
+async function refreshWidget(targetDate) {
+ if(isLoading) return;
+ isLoading = true;
+ const date = targetDate || currentDisplayDate;
+ updateGregorianDisplay(date);
+ try {
+ const hijri = await fetchHijriDate(date);
+ if(hijri) updateHijriDisplay(hijri);
+ const allPrayers = await Promise.all(CITIES.map(c => fetchPrayerTimes(date, c)));
+ updatePrayerTableDisplay(allPrayers);
+ 
+ // 👇 الربط التلقائي الآمن للعداد مع توقيت العاصمة القاهرة (أول عنصر بالمصفوفة) عند نجاح الجلب
+ if (allPrayers && allPrayers[0] && allPrayers[0].raw) {
+     if (countdownIntervalId) clearInterval(countdownIntervalId); // إيقاف العداد القديم تلافياً للتداخل
+     startCountdown(allPrayers[0].raw); // تمرير البيانات الصافية 24 ساعة
+ }
+ } catch(e) { console.warn(e); }
+ isLoading = false;
 }
 
-// ======================== بدء التشغيل ========================
-// أولاً: تهيئة حفظ واستعادة حجم النافذة
-initWindowPersistence();
 
-// ثانياً: تفعيل الأحداث وتحميل البيانات
+// ==========================================
+// 5. منتقي التاريخ الفاخر (DatePicker Modal)
+// ==========================================
+let pickerModal = null;
+function openDatePicker() { activePickerDate = new Date(currentDisplayDate); renderPicker(); }
+function closePicker() { if(pickerModal) pickerModal.remove(); pickerModal = null; }
+
+function renderPicker() {
+ if(pickerModal) pickerModal.remove();
+ const overlay = document.createElement('div');
+ overlay.className = 'datepicker-overlay';
+ const y = activePickerDate.getFullYear(), m = activePickerDate.getMonth();
+ const firstDay = new Date(y, m, 1).getDay();
+ const daysInMonth = new Date(y, m+1, 0).getDate();
+ let grid = [];
+ for(let i=0; i<firstDay; i++) grid.push(null);
+ for(let d=1; d<=daysInMonth; d++) grid.push(new Date(y, m, d));
+ while(grid.length % 7 !== 0) grid.push(null);
+ 
+ const weekdays = ['أحد','إثنين','ثلاثاء','أربعاء','خميس','جمعة','سبت']; 
+ overlay.innerHTML = `
+ <div class="datepicker-modal">
+ <div class="year-month-control">
+ <button id="prevYear">««</button><button id="prevMonth">‹</button>
+ <span id="monthYear">${AR_MONTHS_G[m]} ${toAr(y)}</span>
+ <button id="nextMonth">›</button><button id="nextYear">»»</button>
+ </div>
+ <div class="picker-grid" id="pickerGrid"></div>
+ <div class="picker-actions">
+ <button id="todayBtn">📅 اليوم</button>
+ <button id="closeBtn" class="outline">إلغاء</button>
+ </div>
+ </div>
+ `;
+ document.body.appendChild(overlay);
+ pickerModal = overlay;
+ 
+ function buildGrid() {
+ const container = document.getElementById('pickerGrid');
+ container.innerHTML = '';
+ weekdays.forEach(wd => { let d=document.createElement('div'); d.className='picker-weekday'; d.innerText=wd; container.appendChild(d); });
+ grid.forEach(dt => {
+ let div = document.createElement('div'); div.className = 'picker-day';
+ if(!dt) { div.classList.add('empty'); div.innerText = ''; }
+ else {
+ div.innerText = toAr(dt.getDate());
+ if(dt.toDateString() === currentDisplayDate.toDateString()) div.classList.add('selected');
+ div.onclick = async () => { currentDisplayDate = new Date(dt); await refreshWidget(currentDisplayDate); closePicker(); };
+ }
+ container.appendChild(div);
+ });
+ }
+ 
+ function updateGrid() {
+ const ny = activePickerDate.getFullYear(), nm = activePickerDate.getMonth();
+ document.getElementById('monthYear').innerText = `${AR_MONTHS_G[nm]} ${toAr(ny)}`;
+ const fd = new Date(ny, nm, 1).getDay(), dim = new Date(ny, nm+1, 0).getDate();
+ let ng = [];
+ for(let i=0; i<fd; i++) ng.push(null);
+ for(let d=1; d<=dim; d++) ng.push(new Date(ny, nm, d));
+ while(ng.length % 7 !== 0) ng.push(null);
+ grid = ng; buildGrid();
+ }
+ 
+ document.getElementById('prevMonth').onclick = () => { activePickerDate.setMonth(activePickerDate.getMonth()-1); updateGrid(); };
+ document.getElementById('nextMonth').onclick = () => { activePickerDate.setMonth(activePickerDate.getMonth()+1); updateGrid(); };
+ document.getElementById('prevYear').onclick = () => { activePickerDate.setFullYear(activePickerDate.getFullYear()-1); updateGrid(); };
+ document.getElementById('nextYear').onclick = () => { activePickerDate.setFullYear(activePickerDate.getFullYear()+1); updateGrid(); };
+ document.getElementById('todayBtn').onclick = async () => { currentDisplayDate = new Date(); await refreshWidget(currentDisplayDate); closePicker(); };
+ document.getElementById('closeBtn').onclick = closePicker;
+ overlay.onclick = (e) => { if(e.target === overlay) closePicker(); };
+ buildGrid();
+}
+
+
+// ==========================================
+// 6. حفظ واستعادة حجم ومكان النافذة (Desktop)
+// ==========================================
+const WINDOW_STORAGE_KEY = 'islamic_calendar_window';
+function saveWindowState() {
+ try {
+ if (window.screenX > -10000 && window.screenY > -10000 && window.outerWidth > 100 && window.outerHeight > 100) {
+ const state = { x: window.screenX, y: window.screenY, width: window.outerWidth, height: window.outerHeight };
+ localStorage.setItem(WINDOW_STORAGE_KEY, JSON.stringify(state));
+ document.title = `التقويم الإسلامي - ${state.width}×${state.height}`;
+ }
+ } catch(e) { console.warn('Could not save window state:', e); }
+}
+
+function restoreWindowState() {
+ const saved = localStorage.getItem(WINDOW_STORAGE_KEY);
+ if (saved) {
+ try {
+ const state = JSON.parse(saved);
+ if (state.width && state.height && state.width > 300 && state.width < 2000 && state.height > 300 && state.height < 2000) {
+ const maxX = window.screen.availWidth - 100; const maxY = window.screen.availHeight - 100;
+ const x = Math.min(Math.max(state.x, 0), maxX); const y = Math.min(Math.max(state.y, 0), maxY);
+ window.resizeTo(state.width, state.height);
+ setTimeout(() => window.moveTo(x, y), 50);
+ document.title = `التقويم الإسلامي - ${state.width}×${state.height}`;
+ return true;
+ }
+ } catch(e) { console.warn('Could not restore window state:', e); }
+ }
+ return false;
+}
+
+function initWindowPersistence() {
+ const restored = restoreWindowState();
+ if (!restored) { window.resizeTo(480, 500); document.title = 'التقويم الإسلامي - 480×500'; }
+ window.addEventListener('resize', () => { clearTimeout(saveTimer); saveTimer = setTimeout(saveWindowState, 500); });
+ window.addEventListener('move', () => { clearTimeout(saveTimer); saveTimer = setTimeout(saveWindowState, 500); });
+ window.addEventListener('beforeunload', saveWindowState);
+}
+
+function attachEvents() {
+ ['dayAr','dayEn','gregBlock','hijriBlock','gregLineFullBlock'].forEach(id => {
+ const el = document.getElementById(id); if(el) el.addEventListener('click', openDatePicker);
+ });
+}
+
+// ==========================================
+// 7. إدارة التثبيت PWA والحدث الذكي والـ Shortcuts
+// ==========================================
+let deferredPrompt; 
+const installBtn = document.getElementById('pwaInstallBtn');
+
+// تسجيل الـ Service Worker بشكل نسبى متوافق مع GitHub Pages
+if ('serviceWorker' in navigator) {
+ window.addEventListener('load', () => {
+ navigator.serviceWorker.register('./sw.js')
+ .then(() => console.log('PWA Ready on GitHub Pages!'))
+ .catch((err) => console.error('Service Worker Failed:', err));
+ });
+}
+
+// الاستماع لحدث طلب التثبيت التلقائي وحفظه لزر الواجهة المخصص
+window.addEventListener('beforeinstallprompt', (e) => {
+ e.preventDefault();
+ deferredPrompt = e;
+ if(installBtn) installBtn.style.display = 'block';
+});
+
+if(installBtn) {
+ installBtn.addEventListener('click', async () => {
+  if (!deferredPrompt) return;
+  deferredPrompt.prompt();
+  const { outcome } = await deferredPrompt.userChoice;
+  console.log(`User choice: ${outcome}`);
+  deferredPrompt = null;
+  installBtn.style.display = 'none';
+ });
+}
+
+window.addEventListener('appinstalled', () => {
+ if(installBtn) installBtn.style.display = 'none';
+ console.log('تم التثبيت بنجاح تام على الهاتف!');
+});
+
+// التقاط ضغطة الـ Shortcut لتوجيه واجهة العداد التنازلي المصغر فوراً بسلاسة
+document.addEventListener("DOMContentLoaded", () => {
+ const urlParams = new URLSearchParams(window.location.search);
+ if (urlParams.get('shortcut') === 'countdown') {
+ const countdownElement = document.getElementById('countdown-card'); 
+ if (countdownElement) {
+ setTimeout(() => {
+ countdownElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+ }, 600);
+ }
+ }
+});
+
+// ==========================================
+// 8. نقطة انطلاق التطبيق الفورية عند فتح الصفحة
+// ==========================================
+initWindowPersistence();
 attachEvents();
 refreshWidget(new Date());
 </script>
-	<script>
-   let deferredPrompt;
-
-// 1. تسجيل الـ Service Worker الحالي (تأكد من عدم تكراره واستبداله بهذا)
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js')
-            .then(() => console.log('PWA Ready on GitHub Pages!'))
-            .catch((err) => console.error('Service Worker Failed:', err));
-    });
-}
-
-// 2. التقاط أمر التثبيت المخفي من المتصفح
-window.addEventListener('beforeinstallprompt', (e) => {
-    // منع المتصفح من تجاهل الأمر
-    e.preventDefault();
-    // حفظ الأمر برمجياً
-    deferredPrompt = e;
-});
-
-// 3. الخدعة: بمجرد أن يضغط المستخدم في أي مكان بالصفحة لتصفح المواقيت، يتم استدعاء نافذة التثبيت تلقائياً
-window.addEventListener('click', () => {
-    if (deferredPrompt) {
-        // إظهار نافذة التثبيت الرسمية الخاصة بكروم/أندرويد
-        deferredPrompt.prompt();
-        
-        deferredPrompt.userChoice.then((choiceResult) => {
-            if (choiceResult.outcome === 'accepted') {
-                console.log('وافق المستخدم على التثبيت');
-            }
-            deferredPrompt = null;
-        });
-    }
-});
-
-document.addEventListener("DOMContentLoaded", () => {
-  const urlParams = new URLSearchParams(window.location.search);
-  if (urlParams.get('shortcut') === 'countdown') {
-    const countdownElement = document.getElementById('countdown-card'); 
-    if (countdownElement) {
-      setTimeout(() => {
-        countdownElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }, 600); // إعطاء مهلة بسيطة لبدء حركة الشاشة بسلاسة
-    }
-  }
-});
-
-
-
-		
-</script>
-
 </body>
 </html>
