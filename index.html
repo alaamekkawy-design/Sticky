@@ -271,8 +271,36 @@ function updatePrayerTableDisplay(prayers) {
 // ==========================================
 function startCountdown(prayerTimes) {
     if (!prayerTimes) return;
-    const prayerNames = ['Fajr', 'Sunrise', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'];
-    const prayerArabicNames = { 'Fajr': 'الفجر', 'Sunrise': 'الشروق', 'Dhuhr': 'الظهر', 'Asr': 'العصر', 'Maghrib': 'المغرب', 'Isha': 'العشاء' };
+    
+    // دالة داخلية ذكية لإعادة تحويل وقت الـ 12 ساعة المدني الحالي إلى 24 ساعة برمجية لتشغيل العداد الصافي
+    function convertTo24Hour(timeStr) {
+        if(!timeStr || timeStr === '--:--') return null;
+        let parts = timeStr.trim().split(' ');
+        let minutes = parts[0];
+        let hours = parseInt(parts[1]);
+        
+        // جلب وقت الهاتف الحالي لمعرفة هل الصلاة القادمة في النصف المسائي أم الصباحي
+        let now = new Date();
+        let currentHour = now.getHours();
+        
+        // تقدير منطقي تقريبي لإرجاع الساعة لنظام 24 ساعة متوافق مع مواقيت مصر
+        if (hours < 12) {
+            // صلوات العصر والمغرب والعشاء دائماً بعد الظهر، فلو الساعة من 1 لـ 9 فغالباً هي مساءً (+12)
+            if (hours >= 1 && hours <= 9) {
+                hours += 12;
+            }
+            // صلاة الظهر لو رجعت 12 تظل 12 كما هي، والظهر بمصر قد يؤذن الساعة 11:50 أو 12:00 أو 13:00 حسب التوقيت الصيفي والشتوي
+            if (hours >= 11 && hours <= 12 && currentHour >= 14) {
+                hours += 12;
+            }
+        }
+        return { hours, minutes: parseInt(minutes) };
+    }
+
+    const prayerNames = ['fajr', 'sunrise', 'dhuhr', 'asr', 'maghrib', 'isha'];
+    const prayerArabicNames = { 'fajr': 'الفجر', 'sunrise': 'الشروق', 'dhuhr': 'الظهر', 'asr': 'العصر', 'maghrib': 'المغرب', 'isha': 'العشاء' };
+
+    if (countdownIntervalId) clearInterval(countdownIntervalId);
 
     countdownIntervalId = setInterval(() => {
         const now = new Date();
@@ -281,20 +309,27 @@ function startCountdown(prayerTimes) {
 
         for (let name of prayerNames) {
             const timeString = prayerTimes[name];
-            if (!timeString) continue;
-            const [hours, minutes] = timeString.split(':');
+            const parsed = convertTo24Hour(timeString);
+            if (!parsed) continue;
+
             const prayerDate = new Date(now);
-            prayerDate.setHours(parseInt(hours), parseInt(minutes), 0, 0);
-            if (prayerDate > now) { nextPrayerName = name; nextPrayerTime = prayerDate; break; }
+            prayerDate.setHours(parsed.hours, parsed.minutes, 0, 0);
+
+            if (prayerDate > now) {
+                nextPrayerName = name;
+                nextPrayerTime = prayerDate;
+                break;
+            }
         }
 
         if (!nextPrayerTime) {
-            nextPrayerName = 'Fajr';
-            const timeString = prayerTimes['Fajr'];
-            if (timeString) {
-                const [hours, minutes] = timeString.split(':');
-                nextPrayerTime = new Date(now); nextPrayerTime.setDate(now.getDate() + 1);
-                nextPrayerTime.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+            nextPrayerName = 'fajr';
+            const timeString = prayerTimes['fajr'];
+            const parsed = convertTo24Hour(timeString);
+            if (parsed) {
+                nextPrayerTime = new Date(now);
+                nextPrayerTime.setDate(now.getDate() + 1);
+                nextPrayerTime.setHours(parsed.hours, parsed.minutes, 0, 0);
             }
         }
 
@@ -311,6 +346,7 @@ function startCountdown(prayerTimes) {
     }, 1000);
 }
 
+
 async function refreshWidget(targetDate) {
  if(isLoading) return;
  isLoading = true;
@@ -322,14 +358,14 @@ async function refreshWidget(targetDate) {
  const allPrayers = await Promise.all(CITIES.map(c => fetchPrayerTimes(date, c)));
  updatePrayerTableDisplay(allPrayers);
  
- // 👇 الإصلاح القاطع: استهداف أول عنصر في مصفوفة المدن (index 0 - القاهرة)
- if (allPrayers && allPrayers[0] && allPrayers[0].raw) {
-     if (countdownIntervalId) clearInterval(countdownIntervalId); // تنظيف المؤقت القديم لمنع التداخل
-     startCountdown(allPrayers[0].raw); // تمرير مواقيت القاهرة الصافية 24 ساعة للعداد
+ // 👇 السطر المصيري لتشغيل العداد بناءً على مواقيت القاهرة المتاحة في العنصر الأول [0]
+ if (allPrayers && allPrayers[0]) {
+     startCountdown(allPrayers[0]);
  }
  } catch(e) { console.warn(e); }
  isLoading = false;
 }
+
 
 
 
