@@ -254,21 +254,22 @@ function updatePrayerTableDisplay(prayers) {
  const tbody = document.getElementById('prayerBody');
  tbody.innerHTML = '';
  for(let i=0; i<CITIES.length; i++) {
-  const p = prayers[i];
-  const row = tbody.insertRow();
-  row.insertCell(0).innerText = CITIES[i].name;
-  if(p && p.display) {
-   row.insertCell(1).innerHTML = `<span>${p.display.fajr}</span>`;
-   row.insertCell(2).innerHTML = `<span>${p.display.sunrise}</span>`;
-   row.insertCell(3).innerHTML = `<span>${p.display.dhuhr}</span>`;
-   row.insertCell(4).innerHTML = `<span>${p.display.asr}</span>`;
-   row.insertCell(5).innerHTML = `<span>${p.display.maghrib}</span>`;
-   row.insertCell(6).innerHTML = `<span>${p.display.isha}</span>`;
-  } else {
-   let cell = row.insertCell(1); cell.colSpan = 6; cell.innerText = 'خطأ'; cell.style.textAlign = 'center';
-  }
+ const p = prayers[i];
+ const row = tbody.insertRow();
+ row.insertCell(0).innerText = CITIES[i].name;
+ if(p && p.display) {
+  row.insertCell(1).innerHTML = `<span>${p.display.fajr}</span>`;
+  row.insertCell(2).innerHTML = `<span>${p.display.sunrise}</span>`;
+  row.insertCell(3).innerHTML = `<span>${p.display.dhuhr}</span>`;
+  row.insertCell(4).innerHTML = `<span>${p.display.asr}</span>`;
+  row.insertCell(5).innerHTML = `<span>${p.display.maghrib}</span>`;
+  row.insertCell(6).innerHTML = `<span>${p.display.isha}</span>`;
+ } else {
+  let cell = row.insertCell(1); cell.colSpan = 6; cell.innerText = 'خطأ'; cell.style.textAlign = 'center';
+ }
  }
 }
+
 
 // ==========================================
 // 4. منطق العداد التنازلي والإنعاش التلقائي
@@ -321,19 +322,20 @@ async function refreshWidget(targetDate) {
  const date = targetDate || currentDisplayDate;
  updateGregorianDisplay(date);
  try {
-  const hijri = await fetchHijriDate(date);
-  if(hijri) updateHijriDisplay(hijri);
-  const allPrayers = await Promise.all(CITIES.map(c => fetchPrayerTimes(date, c)));
-  updatePrayerTableDisplay(allPrayers);
+ const hijri = await fetchHijriDate(date);
+ if(hijri) updateHijriDisplay(hijri);
+ const allPrayers = await Promise.all(CITIES.map(c => fetchPrayerTimes(date, c)));
+ updatePrayerTableDisplay(allPrayers);
  
-  // استهداف أول مدينة (القاهرة index 0) من مصفوفة المدن المجمعة بشكل صحيح ومنع التجميد
-  if (allPrayers && allPrayers[0] && allPrayers[0].raw) {
-      if (countdownIntervalId) clearInterval(countdownIntervalId);
-      startCountdown(allPrayers[0].raw);
-  }
+ // 👇 الإصلاح القاطع: استهداف أول عنصر في مصفوفة المدن (index 0 - القاهرة)
+ if (allPrayers && allPrayers[0] && allPrayers[0].raw) {
+     if (countdownIntervalId) clearInterval(countdownIntervalId); // تنظيف المؤقت القديم لمنع التداخل
+     startCountdown(allPrayers[0].raw); // تمرير مواقيت القاهرة الصافية 24 ساعة للعداد
+ }
  } catch(e) { console.warn(e); }
  isLoading = false;
 }
+
 
 
 
