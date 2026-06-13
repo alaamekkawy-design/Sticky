@@ -186,89 +186,84 @@ let countdownIntervalId = null;
 // 2. دوال الـ API وجلب التواقيت بنجاح
 // ==========================================
 async function fetchHijriDate(date) {
- const y = date.getFullYear(), m = date.getMonth()+1, d = date.getDate();
- try {
-  const resp = await fetch(`https://aladhan.com{d}-${m}-${y}`);
-  const data = await resp.json();
-  if(data.code === 200 && data.data) {
-   const hij = data.data.hijri;
-   return { day: parseInt(hij.day), monthName: hij.month.ar, year: parseInt(hij.year) };
-  }
-  return null;
- } catch(e) { return null; }
+  const y = date.getFullYear(), m = date.getMonth()+1, d = date.getDate();
+  try {
+    const resp = await fetch(`https://api.aladhan.com/v1/gToH/${d}-${m}-${y}`);
+    const data = await resp.json();
+    if(data.code === 200 && data.data) {
+      const hij = data.data.hijri;
+      return { day: parseInt(hij.day), monthName: hij.month.ar, year: parseInt(hij.year) };
+    }
+    return null;
+  } catch(e) { return null; }
 }
 
 async function fetchPrayerTimes(date, city) {
- const y = date.getFullYear(), m = date.getMonth()+1, d = date.getDate();
- try {
-  const resp = await fetch(`https://aladhan.com{d}-${m}-${y}?latitude=${city.lat}&longitude=${city.lng}&method=5&school=0&midnightMode=1`);
-  const data = await resp.json();
-  if(data.code === 200 && data.data) {
-   const t = data.data.timings;
-   return {
-     raw: {
-       Fajr: t.Fajr.slice(0,5), Sunrise: t.Sunrise.slice(0,5), Dhuhr: t.Dhuhr.slice(0,5),
-       Asr: t.Asr.slice(0,5), Maghrib: t.Maghrib.slice(0,5), Isha: t.Isha.slice(0,5)
-     },
-     display: {
-       fajr: convertTo12HourFormat(t.Fajr.slice(0,5)),
-       sunrise: convertTo12HourFormat(t.Sunrise.slice(0,5)),
-       dhuhr: convertTo12HourFormat(t.Dhuhr.slice(0,5)),
-       asr: convertTo12HourFormat(t.Asr.slice(0,5)),
-       maghrib: convertTo12HourFormat(t.Maghrib.slice(0,5)),
-       isha: convertTo12HourFormat(t.Isha.slice(0,5))
-     }
-   };
-  }
-  return null;
- } catch(e) { return null; }
+  const y = date.getFullYear(), m = date.getMonth()+1, d = date.getDate();
+  
+  try {
+    const resp = await fetch(`https://api.aladhan.com/v1/timings/${d}-${m}-${y}?latitude=${city.lat}&longitude=${city.lng}&method=5&school=0&midnightMode=1`);
+    const data = await resp.json();
+    if(data.code === 200 && data.data) {
+      const t = data.data.timings;
+      return {
+        fajr: convertTo12HourFormat(t.Fajr.slice(0,5)),
+        sunrise: convertTo12HourFormat(t.Sunrise.slice(0,5)),
+        dhuhr: convertTo12HourFormat(t.Dhuhr.slice(0,5)),
+        asr: convertTo12HourFormat(t.Asr.slice(0,5)),
+        maghrib: convertTo12HourFormat(t.Maghrib.slice(0,5)),
+        isha: convertTo12HourFormat(t.Isha.slice(0,5))
+      };
+    }
+    return null;
+  } catch(e) { return null; }
 }
 
-
-
-
-// ==========================================
-// 3. دالات تحديث وتوزيع البيانات على الشاشة
-// ==========================================
+// ======================== عرض البيانات ========================
 function updateGregorianDisplay(date) {
- document.getElementById('dayAr').innerText = AR_DAYS[date.getDay()];
- document.getElementById('dayEn').innerText = EN_DAYS[date.getDay()];
- document.getElementById('gregDay').innerText = toAr(date.getDate());
- document.getElementById('gregMonth').innerText = AR_MONTHS_G[date.getMonth()];
- document.getElementById('syriacMonth').innerText = AR_MONTHS_SYRIAC[date.getMonth()];
- document.getElementById('gregYear').innerText = toAr(date.getFullYear());
- document.getElementById('gregLineFull').innerText = `${date.getDate()} ${EN_MONTHS[date.getMonth()]} ${date.getFullYear()}`;
- const cop = toCoptic(date);
- document.getElementById('copticSpan').innerText = `${toAr(cop.day)} ${COPTIC_MONTHS[cop.month % 13]} ${toAr(cop.year)}`;
+  document.getElementById('dayAr').innerText = AR_DAYS[date.getDay()];
+  document.getElementById('dayEn').innerText = EN_DAYS[date.getDay()];
+  document.getElementById('gregDay').innerText = toAr(date.getDate());
+  document.getElementById('gregMonth').innerText = AR_MONTHS_G[date.getMonth()];
+  document.getElementById('syriacMonth').innerText = AR_MONTHS_SYRIAC[date.getMonth()];
+  document.getElementById('gregYear').innerText = toAr(date.getFullYear());
+  document.getElementById('gregLineFull').innerText = `${date.getDate()} ${EN_MONTHS[date.getMonth()]} ${date.getFullYear()}`;
+  const cop = toCoptic(date);
+  document.getElementById('copticSpan').innerText = `${toAr(cop.day)} ${COPTIC_MONTHS[cop.month % 13]} ${toAr(cop.year)}`;
 }
 
 function updateHijriDisplay(hijri) {
- if(hijri) {
-  document.getElementById('hijriDay').innerText = toAr(hijri.day);
-  document.getElementById('hijriMonth').innerText = hijri.monthName;
-  document.getElementById('hijriYear').innerText = toAr(hijri.year);
- }
+  if(hijri) {
+    document.getElementById('hijriDay').innerText = toAr(hijri.day);
+    document.getElementById('hijriMonth').innerText = hijri.monthName;
+    document.getElementById('hijriYear').innerText = toAr(hijri.year);
+  }
 }
 
 function updatePrayerTableDisplay(prayers) {
- const tbody = document.getElementById('prayerBody');
- tbody.innerHTML = '';
- for(let i=0; i<CITIES.length; i++) {
- const p = prayers[i];
- const row = tbody.insertRow();
- row.insertCell(0).innerText = CITIES[i].name;
- if(p && p.display) {
-  row.insertCell(1).innerHTML = `<span>${p.display.fajr}</span>`;
-  row.insertCell(2).innerHTML = `<span>${p.display.sunrise}</span>`;
-  row.insertCell(3).innerHTML = `<span>${p.display.dhuhr}</span>`;
-  row.insertCell(4).innerHTML = `<span>${p.display.asr}</span>`;
-  row.insertCell(5).innerHTML = `<span>${p.display.maghrib}</span>`;
-  row.insertCell(6).innerHTML = `<span>${p.display.isha}</span>`;
- } else {
-  let cell = row.insertCell(1); cell.colSpan = 6; cell.innerText = 'خطأ'; cell.style.textAlign = 'center';
- }
- }
+  const tbody = document.getElementById('prayerBody');
+  tbody.innerHTML = '';
+  for(let i=0; i<CITIES.length; i++) {
+    const p = prayers[i];
+    const row = tbody.insertRow();
+    row.insertCell(0).innerText = CITIES[i].name;
+    if(p) {
+      row.insertCell(1).innerHTML = `<span>${p.fajr}</span>`;
+      row.insertCell(2).innerHTML = `<span>${p.sunrise}</span>`;
+      row.insertCell(3).innerHTML = `<span>${p.dhuhr}</span>`;
+      row.insertCell(4).innerHTML = `<span>${p.asr}</span>`;
+      row.insertCell(5).innerHTML = `<span>${p.maghrib}</span>`;
+      row.insertCell(6).innerHTML = `<span>${p.isha}</span>`;
+    } else {
+      let cell = row.insertCell(1);
+      cell.colSpan = 6;
+      cell.innerText = 'خطأ';
+      cell.style.textAlign = 'center';
+    }
+  }
 }
+
+
 
 
 // ==========================================
