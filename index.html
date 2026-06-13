@@ -260,6 +260,9 @@ function updatePrayerTableDisplay(prayers) {
 // 4. منطق العداد التنازلي والإنعاش التلقائي
 // ==========================================
 function startCountdown(prayerTimes) {
+    // سطر حماية: إذا كانت البيانات غير متوفرة لا تشغل العداد لتفادي الأخطاء البرمجية
+    if (!prayerTimes) return; 
+
     const prayerNames = ['Fajr', 'Sunrise', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'];
     const prayerArabicNames = { 'Fajr': 'الفجر', 'Sunrise': 'الشروق', 'Dhuhr': 'الظهر', 'Asr': 'العصر', 'Maghrib': 'المغرب', 'Isha': 'العشاء' };
 
@@ -299,6 +302,7 @@ function startCountdown(prayerTimes) {
         document.getElementById('timer-seconds').innerText = String(seconds).padStart(2, '0');
     }, 1000);
 }
+
 
 async function refreshWidget(targetDate) {
  if(isLoading) return;
