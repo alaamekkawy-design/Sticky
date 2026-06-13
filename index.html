@@ -311,10 +311,10 @@ async function refreshWidget(targetDate) {
  const allPrayers = await Promise.all(CITIES.map(c => fetchPrayerTimes(date, c)));
  updatePrayerTableDisplay(allPrayers);
  
- // الربط التلقائي الصحيح والمضمون للعداد مع بيانات أول مدينة بالمصفوفة (القاهرة)
+ // 👇 التصحيح الحاسم: قراءة الحقل الخام لمدينة القاهرة (العنصر رقم 0 في المصفوفة)
  if (allPrayers && allPrayers[0] && allPrayers[0].raw) {
-     if (countdownIntervalId) clearInterval(countdownIntervalId);
-     startCountdown(allPrayers[0].raw);
+     if (countdownIntervalId) clearInterval(countdownIntervalId); // تنظيف العداد القديم تلافياً للتداخل
+     startCountdown(allPrayers[0].raw); // تمرير البيانات النظيفة للعداد بنجاح
  }
  } catch(e) { console.warn(e); }
  isLoading = false;
