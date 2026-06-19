@@ -17,32 +17,39 @@
     align-items: center;
     justify-content: center;
     font-family: 'Cairo', sans-serif;
-    gap: 30px;
+    gap: clamp(16px, 4vw, 30px);
+    padding: 16px;
+    overflow-x: hidden;
   }
 
   /* ===== HEADER ===== */
   .header {
     background: linear-gradient(135deg, #c9a84c, #f0d060, #c9a84c);
     color: #fff;
-    font-size: 2rem;
+    font-size: clamp(1.2rem, 5vw, 2rem);
     font-weight: 900;
-    padding: 14px 60px;
+    padding: 12px clamp(20px, 8vw, 60px);
     border-radius: 8px;
     text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
     letter-spacing: 1px;
     box-shadow: 0 4px 15px rgba(201,168,76,0.4);
     text-align: center;
+    width: 90%;
+    max-width: 500px;
   }
 
   /* ===== FLIP CLOCK WRAPPER ===== */
   .clock {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: clamp(4px, 2vw, 10px);
     background: #111;
-    padding: 30px 40px;
+    padding: clamp(16px, 4vw, 30px) clamp(12px, 4vw, 40px);
     border-radius: 12px;
     box-shadow: 0 8px 40px rgba(0,0,0,0.7);
+    width: 90%;
+    max-width: 500px;
+    justify-content: center;
   }
 
   /* ===== FLIP UNIT ===== */
@@ -55,7 +62,7 @@
 
   .flip-unit label {
     color: #c9a84c;
-    font-size: 0.85rem;
+    font-size: clamp(0.6rem, 2vw, 0.85rem);
     font-weight: 700;
     letter-spacing: 2px;
     text-transform: uppercase;
@@ -63,8 +70,8 @@
 
   .flip-card {
     position: relative;
-    width: 120px;
-    height: 140px;
+    width: clamp(70px, 22vw, 120px);
+    height: clamp(82px, 26vw, 140px);
     perspective: 600px;
   }
 
@@ -94,7 +101,7 @@
   }
 
   .top span, .bottom span {
-    font-size: 5.5rem;
+    font-size: clamp(3rem, 10vw, 5.5rem);
     font-weight: 900;
     color: #fff;
     line-height: 1;
@@ -110,81 +117,35 @@
     transform: translateY(-50%);
   }
 
-  /* الورقة المتحركة الأمامية */
-  .flip-front, .flip-back {
-    position: absolute;
-    width: 100%;
-    height: 50%;
-    background: #2a2a2a;
-    overflow: hidden;
-    display: flex;
-    justify-content: center;
-    backface-visibility: hidden;
-    transform-origin: bottom center;
-  }
+  /* الورقة المتحركة - غير مستخدمة */
+  .flip-front, .flip-back { display: none; }
 
-  .flip-front {
-    top: 0;
-    border-radius: 8px 8px 0 0;
-    border-bottom: 2px solid #000;
-    align-items: flex-end;
-    transform: rotateX(0deg);
-    z-index: 2;
-  }
-
-  .flip-back {
-    top: 0;
-    border-radius: 8px 8px 0 0;
-    border-bottom: 2px solid #000;
-    align-items: flex-end;
-    transform: rotateX(90deg);
-    z-index: 1;
-    background: #1e1e1e;
-  }
-
-  .flip-front span, .flip-back span {
-    font-size: 5.5rem;
-    font-weight: 900;
-    color: #fff;
-    line-height: 1;
-    transform: translateY(50%);
-    font-family: 'Arial Black', 'Cairo', sans-serif;
-  }
-
-  /* الأنيميشن */
-  @keyframes flipTop {
-    0%   { transform: rotateX(0deg); }
-    100% { transform: rotateX(-90deg); }
-  }
-  @keyframes flipBottom {
-    0%   { transform: rotateX(90deg); }
+  /* الأنيميشن - الورقة السفلية فقط تنزل */
+  @keyframes flipDown {
+    0%   { transform: rotateX(-90deg); }
     100% { transform: rotateX(0deg); }
   }
 
-  .flip-front.animate {
-    animation: flipTop 0.3s ease-in forwards;
-  }
-
-  /* الجزء السفلي المتحرك */
+  /* الجزء السفلي المتحرك (الورقة) */
   .flip-bottom-card {
     position: absolute;
     bottom: 0;
     width: 100%;
     height: 50%;
-    background: #1e1e1e;
+    background: #2a2a2a;
     border-radius: 0 0 8px 8px;
     overflow: hidden;
     display: flex;
     align-items: flex-start;
     justify-content: center;
-    backface-visibility: hidden;
-    transform: rotateX(90deg);
+    transform: rotateX(-90deg);
     transform-origin: top center;
-    z-index: 3;
+    z-index: 5;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.5);
   }
 
   .flip-bottom-card span {
-    font-size: 5.5rem;
+    font-size: clamp(3rem, 10vw, 5.5rem);
     font-weight: 900;
     color: #fff;
     line-height: 1;
@@ -193,12 +154,12 @@
   }
 
   .flip-bottom-card.animate {
-    animation: flipBottom 0.3s ease-out 0.3s forwards;
+    animation: flipDown 0.35s ease-out forwards;
   }
 
   /* الفاصل */
   .separator {
-    font-size: 5rem;
+    font-size: clamp(2.5rem, 8vw, 5rem);
     font-weight: 900;
     color: #c9a84c;
     line-height: 1;
@@ -210,13 +171,15 @@
   .input-panel {
     display: flex;
     align-items: center;
-    gap: 16px;
+    gap: 10px;
     background: #222;
-    padding: 20px 30px;
+    padding: 16px 20px;
     border-radius: 10px;
     box-shadow: 0 4px 20px rgba(0,0,0,0.5);
     flex-wrap: wrap;
     justify-content: center;
+    width: 90%;
+    max-width: 500px;
   }
 
   .input-group {
@@ -234,9 +197,9 @@
   }
 
   .input-group input {
-    width: 80px;
+    width: clamp(60px, 18vw, 80px);
     text-align: center;
-    font-size: 1.6rem;
+    font-size: clamp(1.2rem, 4vw, 1.6rem);
     font-weight: 700;
     font-family: 'Cairo', sans-serif;
     background: #111;
@@ -253,7 +216,7 @@
   }
 
   .input-sep {
-    font-size: 1.8rem;
+    font-size: 1.6rem;
     color: #555;
     font-weight: 900;
     padding-top: 18px;
@@ -262,16 +225,18 @@
   /* ===== BUTTONS ===== */
   .btn-group {
     display: flex;
-    gap: 12px;
+    gap: 10px;
     flex-wrap: wrap;
     justify-content: center;
+    width: 90%;
+    max-width: 500px;
   }
 
   .btn {
     font-family: 'Cairo', sans-serif;
-    font-size: 1rem;
+    font-size: clamp(0.9rem, 3vw, 1rem);
     font-weight: 700;
-    padding: 12px 32px;
+    padding: 12px clamp(16px, 5vw, 32px);
     border-radius: 8px;
     border: none;
     cursor: pointer;
@@ -342,15 +307,15 @@
 
 <!-- FLIP CLOCK -->
 <div class="clock">
-  <!-- Hours -->
+  <!-- Seconds -->
   <div class="flip-unit">
-    <div class="flip-card" id="fc-hours">
-      <div class="top"><span id="top-h">00</span></div>
-      <div class="bottom"><span id="bot-h">00</span></div>
-      <div class="flip-front" id="ff-h"><span id="ff-h-num">00</span></div>
-      <div class="flip-bottom-card" id="fb-h"><span id="fb-h-num">00</span></div>
+    <div class="flip-card" id="fc-seconds">
+      <div class="top"><span id="top-s">00</span></div>
+      <div class="bottom"><span id="bot-s">00</span></div>
+      <div class="flip-front" id="ff-s"><span id="ff-s-num">00</span></div>
+      <div class="flip-bottom-card" id="fb-s"><span id="fb-s-num">00</span></div>
     </div>
-    <label>ساعة</label>
+    <label>ثانية</label>
   </div>
 
   <div class="separator">:</div>
@@ -368,23 +333,23 @@
 
   <div class="separator">:</div>
 
-  <!-- Seconds -->
+  <!-- Hours -->
   <div class="flip-unit">
-    <div class="flip-card" id="fc-seconds">
-      <div class="top"><span id="top-s">00</span></div>
-      <div class="bottom"><span id="bot-s">00</span></div>
-      <div class="flip-front" id="ff-s"><span id="ff-s-num">00</span></div>
-      <div class="flip-bottom-card" id="fb-s"><span id="fb-s-num">00</span></div>
+    <div class="flip-card" id="fc-hours">
+      <div class="top"><span id="top-h">00</span></div>
+      <div class="bottom"><span id="bot-h">00</span></div>
+      <div class="flip-front" id="ff-h"><span id="ff-h-num">00</span></div>
+      <div class="flip-bottom-card" id="fb-h"><span id="fb-h-num">00</span></div>
     </div>
-    <label>ثانية</label>
+    <label>ساعة</label>
   </div>
 </div>
 
 <!-- INPUT PANEL -->
 <div class="input-panel">
   <div class="input-group">
-    <label>ساعة</label>
-    <input type="number" id="inp-h" min="0" max="99" value="0" placeholder="00">
+    <label>ثانية</label>
+    <input type="number" id="inp-s" min="0" max="59" value="0" placeholder="00">
   </div>
   <div class="input-sep">:</div>
   <div class="input-group">
@@ -393,8 +358,8 @@
   </div>
   <div class="input-sep">:</div>
   <div class="input-group">
-    <label>ثانية</label>
-    <input type="number" id="inp-s" min="0" max="59" value="0" placeholder="00">
+    <label>ساعة</label>
+    <input type="number" id="inp-h" min="0" max="99" value="0" placeholder="00">
   </div>
 </div>
 
@@ -441,31 +406,27 @@
   function flipUnit(key, newVal) {
     if (prevValues[key] === newVal) return;
     const u = units[key];
-    const oldStr = pad(prevValues[key]);
     const newStr = pad(newVal);
 
-    // setup
-    u.top.textContent = oldStr;       // static top shows old
-    u.bot.textContent = newStr;       // static bottom shows new
-    u.ffNum.textContent = oldStr;     // front flap = old (will rotate away)
-    u.fbNum.textContent = newStr;     // back flap = new (will rotate in)
+    // 1. النصف العلوي يأخذ الرقم الجديد فوراً (بدون حركة)
+    u.top.textContent = newStr;
 
-    // reset animations
-    u.ffEl.classList.remove('animate');
+    // 2. النصف السفلي الثابت يعرض الرقم الجديد (خلفية الورقة)
+    u.bot.textContent = newStr;
+
+    // 3. الورقة المتحركة تحمل الرقم الجديد وتنزل من فوق لتحت
+    u.fbNum.textContent = newStr;
+
+    // reset animation
     u.fbEl.classList.remove('animate');
-    void u.ffEl.offsetWidth; // reflow
-    void u.fbEl.offsetWidth;
+    void u.fbEl.offsetWidth; // reflow
 
-    u.ffEl.classList.add('animate');
     u.fbEl.classList.add('animate');
 
-    // after animation: update top to new
+    // بعد الانتهاء: أزل class
     setTimeout(() => {
-      u.top.textContent = newStr;
-      u.ffNum.textContent = newStr;
-      u.ffEl.classList.remove('animate');
       u.fbEl.classList.remove('animate');
-    }, 650);
+    }, 400);
 
     prevValues[key] = newVal;
   }
