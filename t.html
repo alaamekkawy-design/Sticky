@@ -1,357 +1,613 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>كونت دون · أسواق مالية</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>كاونت داون</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@700;900&display=swap');
 
-        body {
-            min-height: 100vh;
-            background: linear-gradient(145deg, #0b0e14 0%, #1a1f2a 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-family: 'Segoe UI', 'Tahoma', 'system-ui', sans-serif;
-            padding: 1rem;
-        }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
 
-        .card {
-            background: #1e2532;
-            background-image: radial-gradient(circle at 20% 30%, #2c3545 0%, #141a24 90%);
-            border-radius: 3rem 3rem 2.5rem 2.5rem;
-            padding: 2.5rem 3rem 2.8rem;
-            box-shadow: 
-                0 20px 40px rgba(0, 0, 0, 0.7),
-                inset 0 2px 3px rgba(255, 255, 255, 0.06),
-                inset 0 -3px 6px rgba(0, 0, 0, 0.6);
-            border: 1px solid rgba(255, 215, 120, 0.15);
-            backdrop-filter: blur(2px);
-            transition: all 0.2s ease;
-            max-width: 600px;
-            width: 100%;
-        }
+  body {
+    background: #1a1a1a;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Cairo', sans-serif;
+    gap: 30px;
+  }
 
-        /* header: الأسواق المالية */
-        .market-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: baseline;
-            border-bottom: 1px solid rgba(212, 175, 55, 0.25);
-            padding-bottom: 0.6rem;
-            margin-bottom: 2rem;
-        }
+  /* ===== HEADER ===== */
+  .header {
+    background: linear-gradient(135deg, #c9a84c, #f0d060, #c9a84c);
+    color: #fff;
+    font-size: 2rem;
+    font-weight: 900;
+    padding: 14px 60px;
+    border-radius: 8px;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+    letter-spacing: 1px;
+    box-shadow: 0 4px 15px rgba(201,168,76,0.4);
+    text-align: center;
+  }
 
-        .market-title {
-            font-size: 1.7rem;
-            font-weight: 500;
-            letter-spacing: 2px;
-            color: #f5e7c8;
-            text-shadow: 0 2px 5px rgba(0,0,0,0.6);
-            font-family: 'Segoe UI', 'Tahoma', sans-serif;
-        }
+  /* ===== FLIP CLOCK WRAPPER ===== */
+  .clock {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #111;
+    padding: 30px 40px;
+    border-radius: 12px;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.7);
+  }
 
-        .market-title span {
-            font-weight: 300;
-            color: #c9b27c;
-            margin-right: 6px;
-        }
+  /* ===== FLIP UNIT ===== */
+  .flip-unit {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
 
-        .market-date-hijri {
-            font-size: 1rem;
-            color: #b9aa83;
-            background: rgba(0,0,0,0.3);
-            padding: 0.2rem 1rem;
-            border-radius: 30px;
-            border: 1px solid rgba(212, 175, 55, 0.2);
-            letter-spacing: 0.5px;
-        }
+  .flip-unit label {
+    color: #c9a84c;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
 
-        /* الوقت الكبير */
-        .time-block {
-            display: flex;
-            justify-content: center;
-            align-items: baseline;
-            gap: 0.25rem;
-            margin-top: 0.2rem;
-            margin-bottom: 1rem;
-            direction: ltr;
-        }
+  .flip-card {
+    position: relative;
+    width: 120px;
+    height: 140px;
+    perspective: 600px;
+  }
 
-        .time-digits {
-            font-size: 5.5rem;
-            font-weight: 600;
-            color: #f2e3c2;
-            letter-spacing: 6px;
-            text-shadow: 
-                0 0 12px rgba(212, 175, 55, 0.3),
-                0 4px 8px rgba(0,0,0,0.7);
-            background: rgba(0, 0, 0, 0.25);
-            padding: 0.1rem 1.2rem 0.1rem 1.8rem;
-            border-radius: 60px;
-            backdrop-filter: blur(4px);
-            border: 1px solid rgba(255, 215, 120, 0.15);
-            box-shadow: inset 0 0 20px rgba(0,0,0,0.4);
-            font-variant-numeric: tabular-nums;
-            line-height: 1.3;
-        }
+  /* الجزء الثابت العلوي */
+  .top, .bottom {
+    position: absolute;
+    width: 100%;
+    height: 50%;
+    background: #222;
+    overflow: hidden;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+  }
 
-        .time-seconds {
-            font-size: 2.8rem;
-            font-weight: 300;
-            color: #d8c8a0;
-            background: rgba(0,0,0,0.25);
-            padding: 0.2rem 0.9rem;
-            border-radius: 40px;
-            border: 1px solid rgba(212, 175, 55, 0.15);
-            backdrop-filter: blur(4px);
-            margin-right: 0.5rem;
-            letter-spacing: 2px;
-        }
+  .top {
+    top: 0;
+    border-radius: 8px 8px 0 0;
+    border-bottom: 2px solid #000;
+    align-items: flex-end;
+  }
 
-        /* الصف السفلي: التاريخ + AM/PM */
-        .bottom-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 1.8rem;
-            padding-top: 0.8rem;
-            border-top: 1px solid rgba(212, 175, 55, 0.15);
-            flex-wrap: wrap;
-            gap: 0.8rem 1rem;
-        }
+  .bottom {
+    bottom: 0;
+    border-radius: 0 0 8px 8px;
+    align-items: flex-start;
+  }
 
-        .gregorian-date {
-            font-size: 1.2rem;
-            font-weight: 400;
-            color: #d6c9ad;
-            background: rgba(0, 0, 0, 0.2);
-            padding: 0.2rem 1.5rem;
-            border-radius: 40px;
-            border: 1px solid rgba(255, 215, 120, 0.1);
-            letter-spacing: 0.5px;
-        }
+  .top span, .bottom span {
+    font-size: 5.5rem;
+    font-weight: 900;
+    color: #fff;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+    font-family: 'Arial Black', 'Cairo', sans-serif;
+  }
 
-        .am-pm {
-            font-size: 1.6rem;
-            font-weight: 300;
-            color: #e7dbb8;
-            background: rgba(0, 0, 0, 0.2);
-            padding: 0 1.2rem;
-            border-radius: 50px;
-            border: 1px solid rgba(212, 175, 55, 0.2);
-            letter-spacing: 2px;
-            line-height: 1.6;
-        }
+  .top span {
+    transform: translateY(50%);
+  }
 
-        /* تنسيق إضافي للهواتف */
-        @media (max-width: 500px) {
-            .card {
-                padding: 1.8rem 1.2rem 2rem;
-                border-radius: 2.2rem;
-            }
-            .market-title {
-                font-size: 1.3rem;
-            }
-            .market-date-hijri {
-                font-size: 0.8rem;
-                padding: 0.1rem 0.8rem;
-            }
-            .time-digits {
-                font-size: 3.8rem;
-                letter-spacing: 4px;
-                padding: 0.1rem 0.8rem 0.1rem 1.2rem;
-            }
-            .time-seconds {
-                font-size: 2rem;
-                padding: 0.1rem 0.6rem;
-            }
-            .gregorian-date {
-                font-size: 1rem;
-                padding: 0.1rem 1rem;
-            }
-            .am-pm {
-                font-size: 1.2rem;
-                padding: 0 0.8rem;
-            }
-        }
+  .bottom span {
+    transform: translateY(-50%);
+  }
 
-        @media (max-width: 400px) {
-            .time-digits {
-                font-size: 2.8rem;
-                letter-spacing: 2px;
-                padding: 0.1rem 0.4rem;
-            }
-            .time-seconds {
-                font-size: 1.5rem;
-                padding: 0.1rem 0.4rem;
-                margin-right: 0.2rem;
-            }
-            .market-header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 0.3rem;
-            }
-        }
-    </style>
+  /* الورقة المتحركة الأمامية */
+  .flip-front, .flip-back {
+    position: absolute;
+    width: 100%;
+    height: 50%;
+    background: #2a2a2a;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    backface-visibility: hidden;
+    transform-origin: bottom center;
+  }
+
+  .flip-front {
+    top: 0;
+    border-radius: 8px 8px 0 0;
+    border-bottom: 2px solid #000;
+    align-items: flex-end;
+    transform: rotateX(0deg);
+    z-index: 2;
+  }
+
+  .flip-back {
+    top: 0;
+    border-radius: 8px 8px 0 0;
+    border-bottom: 2px solid #000;
+    align-items: flex-end;
+    transform: rotateX(90deg);
+    z-index: 1;
+    background: #1e1e1e;
+  }
+
+  .flip-front span, .flip-back span {
+    font-size: 5.5rem;
+    font-weight: 900;
+    color: #fff;
+    line-height: 1;
+    transform: translateY(50%);
+    font-family: 'Arial Black', 'Cairo', sans-serif;
+  }
+
+  /* الأنيميشن */
+  @keyframes flipTop {
+    0%   { transform: rotateX(0deg); }
+    100% { transform: rotateX(-90deg); }
+  }
+  @keyframes flipBottom {
+    0%   { transform: rotateX(90deg); }
+    100% { transform: rotateX(0deg); }
+  }
+
+  .flip-front.animate {
+    animation: flipTop 0.3s ease-in forwards;
+  }
+
+  /* الجزء السفلي المتحرك */
+  .flip-bottom-card {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 50%;
+    background: #1e1e1e;
+    border-radius: 0 0 8px 8px;
+    overflow: hidden;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    backface-visibility: hidden;
+    transform: rotateX(90deg);
+    transform-origin: top center;
+    z-index: 3;
+  }
+
+  .flip-bottom-card span {
+    font-size: 5.5rem;
+    font-weight: 900;
+    color: #fff;
+    line-height: 1;
+    transform: translateY(-50%);
+    font-family: 'Arial Black', 'Cairo', sans-serif;
+  }
+
+  .flip-bottom-card.animate {
+    animation: flipBottom 0.3s ease-out 0.3s forwards;
+  }
+
+  /* الفاصل */
+  .separator {
+    font-size: 5rem;
+    font-weight: 900;
+    color: #c9a84c;
+    line-height: 1;
+    padding-bottom: 30px;
+    text-shadow: 0 0 10px rgba(201,168,76,0.5);
+  }
+
+  /* ===== INPUT PANEL ===== */
+  .input-panel {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: #222;
+    padding: 20px 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .input-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .input-group label {
+    color: #c9a84c;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
+
+  .input-group input {
+    width: 80px;
+    text-align: center;
+    font-size: 1.6rem;
+    font-weight: 700;
+    font-family: 'Cairo', sans-serif;
+    background: #111;
+    color: #fff;
+    border: 2px solid #444;
+    border-radius: 8px;
+    padding: 8px 4px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .input-group input:focus {
+    border-color: #c9a84c;
+  }
+
+  .input-sep {
+    font-size: 1.8rem;
+    color: #555;
+    font-weight: 900;
+    padding-top: 18px;
+  }
+
+  /* ===== BUTTONS ===== */
+  .btn-group {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .btn {
+    font-family: 'Cairo', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    padding: 12px 32px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 1px;
+  }
+
+  .btn-start {
+    background: linear-gradient(135deg, #c9a84c, #f0d060);
+    color: #111;
+  }
+
+  .btn-start:hover { transform: scale(1.05); box-shadow: 0 4px 15px rgba(201,168,76,0.5); }
+
+  .btn-pause {
+    background: #333;
+    color: #fff;
+    border: 2px solid #555;
+  }
+
+  .btn-pause:hover { background: #444; }
+
+  .btn-reset {
+    background: transparent;
+    color: #888;
+    border: 2px solid #444;
+  }
+
+  .btn-reset:hover { color: #fff; border-color: #888; }
+
+  /* ===== FINISHED ===== */
+  .finished-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    z-index: 100;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+  }
+
+  .finished-overlay.show { display: flex; }
+
+  .finished-text {
+    font-size: 3rem;
+    font-weight: 900;
+    color: #c9a84c;
+    text-shadow: 0 0 30px rgba(201,168,76,0.8);
+    animation: pulse 1s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+  }
+
+  .finished-overlay .btn-start {
+    font-size: 1.1rem;
+    padding: 14px 40px;
+  }
+</style>
 </head>
 <body>
-    <div class="card">
-        <!-- رأس البطاقة: الأسواق المالية + التاريخ الهجري -->
-        <div class="market-header">
-            <div class="market-title">
-                <span>🟡</span> الأسواق المالية
-            </div>
-            <div class="market-date-hijri" id="hijriDate">
-                1448 محرم 4
-            </div>
-        </div>
 
-        <!-- الوقت: ساعات ودقائق + ثواني -->
-        <div class="time-block">
-            <span class="time-digits" id="hoursMinutes">19:35</span>
-            <span class="time-seconds" id="seconds">21</span>
-        </div>
+<div class="header">كاونت داون</div>
 
-        <!-- الصف السفلي: التاريخ الميلادي + AM/PM -->
-        <div class="bottom-row">
-            <span class="gregorian-date" id="gregorianDate">19 يونيو 2026</span>
-            <span class="am-pm" id="ampm">03:21 AM</span>
-        </div>
+<!-- FLIP CLOCK -->
+<div class="clock">
+  <!-- Hours -->
+  <div class="flip-unit">
+    <div class="flip-card" id="fc-hours">
+      <div class="top"><span id="top-h">00</span></div>
+      <div class="bottom"><span id="bot-h">00</span></div>
+      <div class="flip-front" id="ff-h"><span id="ff-h-num">00</span></div>
+      <div class="flip-bottom-card" id="fb-h"><span id="fb-h-num">00</span></div>
     </div>
+    <label>ساعة</label>
+  </div>
 
-    <script>
-        (function() {
-            // عناصر DOM
-            const hoursMinutesEl = document.getElementById('hoursMinutes');
-            const secondsEl = document.getElementById('seconds');
-            const ampmEl = document.getElementById('ampm');
-            const gregorianDateEl = document.getElementById('gregorianDate');
-            const hijriDateEl = document.getElementById('hijriDate');
+  <div class="separator">:</div>
 
-            // أسماء أيام الأسبوع (للترجمة العربية)
-            const weekDays = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
-            const monthsGregorian = [
-                'يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو',
-                'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'
-            ];
+  <!-- Minutes -->
+  <div class="flip-unit">
+    <div class="flip-card" id="fc-minutes">
+      <div class="top"><span id="top-m">00</span></div>
+      <div class="bottom"><span id="bot-m">00</span></div>
+      <div class="flip-front" id="ff-m"><span id="ff-m-num">00</span></div>
+      <div class="flip-bottom-card" id="fb-m"><span id="fb-m-num">00</span></div>
+    </div>
+    <label>دقيقة</label>
+  </div>
 
-            // أسماء الشهور الهجرية (تقريبية، ثابتة)
-            const hijriMonths = [
-                'محرم', 'صفر', 'ربيع الأول', 'ربيع الآخر', 'جمادى الأولى', 'جمادى الآخرة',
-                'رجب', 'شعبان', 'رمضان', 'شوال', 'ذو القعدة', 'ذو الحجة'
-            ];
+  <div class="separator">:</div>
 
-            // دالة لتحديث كل شيء
-            function updateClock() {
-                const now = new Date();
+  <!-- Seconds -->
+  <div class="flip-unit">
+    <div class="flip-card" id="fc-seconds">
+      <div class="top"><span id="top-s">00</span></div>
+      <div class="bottom"><span id="bot-s">00</span></div>
+      <div class="flip-front" id="ff-s"><span id="ff-s-num">00</span></div>
+      <div class="flip-bottom-card" id="fb-s"><span id="fb-s-num">00</span></div>
+    </div>
+    <label>ثانية</label>
+  </div>
+</div>
 
-                // 1. الوقت: ساعات ودقائق وثواني
-                let hours = now.getHours();
-                let minutes = now.getMinutes();
-                let seconds = now.getSeconds();
+<!-- INPUT PANEL -->
+<div class="input-panel">
+  <div class="input-group">
+    <label>ساعة</label>
+    <input type="number" id="inp-h" min="0" max="99" value="0" placeholder="00">
+  </div>
+  <div class="input-sep">:</div>
+  <div class="input-group">
+    <label>دقيقة</label>
+    <input type="number" id="inp-m" min="0" max="59" value="5" placeholder="00">
+  </div>
+  <div class="input-sep">:</div>
+  <div class="input-group">
+    <label>ثانية</label>
+    <input type="number" id="inp-s" min="0" max="59" value="0" placeholder="00">
+  </div>
+</div>
 
-                // صياغة HH:MM
-                const hh = String(hours).padStart(2, '0');
-                const mm = String(minutes).padStart(2, '0');
-                hoursMinutesEl.textContent = `${hh}:${mm}`;
+<div class="btn-group">
+  <button class="btn btn-start" id="btn-start">▶ ابدأ</button>
+  <button class="btn btn-pause" id="btn-pause" style="display:none">⏸ إيقاف</button>
+  <button class="btn btn-reset" id="btn-reset">↺ إعادة</button>
+</div>
 
-                // الثواني
-                secondsEl.textContent = String(seconds).padStart(2, '0');
+<!-- FINISHED -->
+<div class="finished-overlay" id="finished">
+  <div class="finished-text">⏰ انتهى الوقت!</div>
+  <button class="btn btn-start" onclick="resetAll()">إعادة تشغيل</button>
+</div>
 
-                // 2. AM / PM (مع صيغة 12 ساعة للعرض)
-                let hours12 = hours % 12;
-                if (hours12 === 0) hours12 = 12;
-                const ampm = hours >= 12 ? 'PM' : 'AM';
-                // نعرضها بالشكل: 03:21 AM (بأرقام إنجليزية، كما في الصورة)
-                const ampmDisplay = `${String(hours12).padStart(2, '0')}:${String(minutes).padStart(2, '0')} ${ampm}`;
-                ampmEl.textContent = ampmDisplay;
+<script>
+  let totalSeconds = 0;
+  let remaining = 0;
+  let timer = null;
+  let running = false;
 
-                // 3. التاريخ الميلادي: 19 يونيو 2026
-                const day = now.getDate();
-                const monthIndex = now.getMonth();
-                const year = now.getFullYear();
-                const gregorianStr = `${day} ${monthsGregorian[monthIndex]} ${year}`;
-                gregorianDateEl.textContent = gregorianStr;
+  // ===== FLIP LOGIC =====
+  const units = {
+    h: { top: document.getElementById('top-h'), bot: document.getElementById('bot-h'), ffEl: document.getElementById('ff-h'), fbEl: document.getElementById('fb-h'), ffNum: document.getElementById('ff-h-num'), fbNum: document.getElementById('fb-h-num') },
+    m: { top: document.getElementById('top-m'), bot: document.getElementById('bot-m'), ffEl: document.getElementById('ff-m'), fbEl: document.getElementById('fb-m'), ffNum: document.getElementById('ff-m-num'), fbNum: document.getElementById('fb-m-num') },
+    s: { top: document.getElementById('top-s'), bot: document.getElementById('bot-s'), ffEl: document.getElementById('ff-s'), fbEl: document.getElementById('fb-s'), ffNum: document.getElementById('ff-s-num'), fbNum: document.getElementById('fb-s-num') },
+  };
 
-                // 4. التاريخ الهجري (تقريبي ثابت مع إمكانية التحديث بناءً على التاريخ)
-                //    نستخدم محاكاة بسيطة: نأخذ التاريخ الحقيقي ونحسب تقديراً للهجري.
-                //    لكن للحفاظ على المظهر المشابه للصورة (1448 محرم 4) نعرض تاريخاً ثابتاً
-                //    مع إمكانية تغييره ديناميكياً إن أردت.
-                //    لكنني سأجعله يحسب تقديراً تقريبياً (ليس دقيقاً شرعاً) ليظهر متغيراً.
-                //    يمكنك استبدال هذا بأي API أو حساب دقيق.
-                //    سنستخدم خوارزمية تقريبية (تعتمد على天数).
-                //    ملاحظة: 1448/1/1 يوافق تقريباً 2026/6/7 (تقديري) ولكن سنعرض قيمة ثابتة
-                //    كما في الصورة، لكن مع تغيير بسيط ليظهر ديناميكياً.
-                //    لكن احتراماً للصورة سأعرض "1448 محرم 4" باستمرار،
-                //    مع إضافة إمكانية التحديث كل يوم (لكن نثبتها للتوافق مع الصورة).
-                //    ولإرضاء الطلب سأجعلها ثابتة كما في الصورة، لكن يمكن فك التعليق لتفعيل التحديث.
-                
-                // نعرض التاريخ الهجري كما هو مطلوب في الصورة (ثابت)
-                // ولكني سأجعله ديناميكياً بشكل بسيط يحاكي تغير الأيام (تقديري)
-                // بحيث لا يمل المستخدم من نفس الرقم.
-                // لكن الصورة تظهر "1448 محرم 4" لذا سأعرضها ثابتة مع إمكانية التبديل.
-                // سأحتفظ بالقيمة ثابتة مطابقة للصورة.
-                
-                // لكن، لجعلها أكثر حيوية، سأحسب عدد الأيام منذ 2026/6/7 (تقدير بداية 1448/1/1)
-                // ونضيف الأيام لنعرض اليوم الحالي من محرم.
-                // هذا مجرد تقدير.
-                
-                // بداية 1448/1/1 = 2026/6/7 (تقريباً)
-                const startHijri = new Date(2026, 5, 7); // 7 يونيو 2026
-                const diffDays = Math.floor((now - startHijri) / (1000 * 60 * 60 * 24));
-                let hijriDay = diffDays + 1; // اليوم 1 في 7 يونيو
-                let hijriMonth = 0; // محرم = 0
-                let hijriYear = 1448;
-                
-                // بسيط: لو تجاوز 30 يوم ننتقل لصفر وهكذا (لكن فقط للعرض)
-                if (hijriDay > 30) {
-                    hijriMonth = 1; // صفر
-                    hijriDay = hijriDay - 30;
-                }
-                if (hijriDay > 30 && hijriMonth === 1) {
-                    hijriMonth = 2;
-                    hijriDay = hijriDay - 30;
-                }
-                // نحد من الشهر إلى 2 فقط للعرض (لأن الصورة تظهر محرم)
-                // لكننا نريد أن نعرض "محرم" غالباً، لذا نثبت الشهر محرم ونغير اليوم قليلاً.
-                // لكن الأفضل أن نعرض القيمة كما في الصورة (ثابتة) 
-                // لأن المستخدم طلب "كونت دون زي ده html" ويعني بنفس التنسيق.
-                // لذا سأعرض "1448 محرم 4" ثابتة تماماً، لأن الصورة تظهر ذلك.
-                // ولكن يمكنني جعل اليوم يتحرك بين 1-30 ليعطي انطباع حيوية.
-                // لكني سألتزم بالصورة: 1448 محرم 4.
-                
-                // ولكن يمكنني جعل اليوم يتغير بشكل طفيف بناءً على تاريخ اليوم الحقيقي
-                // ليظهر بشكل ديناميكي ولكن مع الحفاظ على الشهر محرم.
-                // سأحسب اليوم الحقيقي من تاريخ البداية، ولكن سأبقيه ضمن محرم (0)
-                // ونعرض اليوم المحسوب.
-                
-                // نعيد ضبط الحساب: نأخذ الأيام من 2026/6/7 ونضيفها إلى اليوم الأول
-                // ونعرض اليوم ضمن محرم (0)
-                let dayInHijri = diffDays + 1; // 1-based
-                // نحد اليوم بين 1 و 30 (محرم)
-                if (dayInHijri > 30) {
-                    dayInHijri = ((dayInHijri - 1) % 30) + 1; 
-                }
-                // نعرض التاريخ الهجري مع اليوم المحسوب (لكن نثبت الشهر محرم)
-                // نعرض بصيغة "1448 محرم X"
-                hijriDateEl.textContent = `1448 محرم ${dayInHijri}`;
-                
-                // ولكن لكي نطابق الصورة تماماً (محرم 4) يمكننا تعيين القيمة ثابتة.
-                // لكنني سأتركها ديناميكية تعطي إحساساً بالحركة.
-                // إذا أردت الثبات التام، استخدم السطر المعلق أدناه بدلاً من السطر أعلاه.
-                // hijriDateEl.textContent = '1448 محرم 4';
-            }
+  let prevValues = { h: -1, m: -1, s: -1 };
 
-            // تحديث كل ثانية
-            updateClock();
-            setInterval(updateClock, 1000);
-        })();
-    </script>
+  function pad(n) { return String(n).padStart(2, '0'); }
+
+  function setUnit(key, val) {
+    const u = units[key];
+    const str = pad(val);
+    // just set static (no flip needed for init)
+    u.top.textContent = str;
+    u.bot.textContent = str;
+    u.ffNum.textContent = str;
+    u.fbNum.textContent = str;
+    prevValues[key] = val;
+  }
+
+  function flipUnit(key, newVal) {
+    if (prevValues[key] === newVal) return;
+    const u = units[key];
+    const oldStr = pad(prevValues[key]);
+    const newStr = pad(newVal);
+
+    // setup
+    u.top.textContent = oldStr;       // static top shows old
+    u.bot.textContent = newStr;       // static bottom shows new
+    u.ffNum.textContent = oldStr;     // front flap = old (will rotate away)
+    u.fbNum.textContent = newStr;     // back flap = new (will rotate in)
+
+    // reset animations
+    u.ffEl.classList.remove('animate');
+    u.fbEl.classList.remove('animate');
+    void u.ffEl.offsetWidth; // reflow
+    void u.fbEl.offsetWidth;
+
+    u.ffEl.classList.add('animate');
+    u.fbEl.classList.add('animate');
+
+    // after animation: update top to new
+    setTimeout(() => {
+      u.top.textContent = newStr;
+      u.ffNum.textContent = newStr;
+      u.ffEl.classList.remove('animate');
+      u.fbEl.classList.remove('animate');
+    }, 650);
+
+    prevValues[key] = newVal;
+  }
+
+  function displayTime(sec) {
+    const h = Math.floor(sec / 3600);
+    const m = Math.floor((sec % 3600) / 60);
+    const s = sec % 60;
+
+    if (prevValues.h !== h) flipUnit('h', h);
+    if (prevValues.m !== m) flipUnit('m', m);
+    if (prevValues.s !== s) flipUnit('s', s);
+  }
+
+  function initDisplay(sec) {
+    const h = Math.floor(sec / 3600);
+    const m = Math.floor((sec % 3600) / 60);
+    const s = sec % 60;
+    setUnit('h', h);
+    setUnit('m', m);
+    setUnit('s', s);
+  }
+
+  // ===== CONTROLS =====
+  document.getElementById('btn-start').addEventListener('click', () => {
+    if (running) return;
+
+    const h = parseInt(document.getElementById('inp-h').value) || 0;
+    const m = parseInt(document.getElementById('inp-m').value) || 0;
+    const s = parseInt(document.getElementById('inp-s').value) || 0;
+    totalSeconds = h * 3600 + m * 60 + s;
+
+    if (totalSeconds <= 0) return;
+
+    remaining = totalSeconds;
+    initDisplay(remaining);
+    running = true;
+
+    document.getElementById('btn-start').style.display = 'none';
+    document.getElementById('btn-pause').style.display = 'inline-block';
+
+    timer = setInterval(() => {
+      remaining--;
+      displayTime(remaining);
+      if (remaining <= 0) {
+        clearInterval(timer);
+        running = false;
+        playBell();
+        document.getElementById('finished').classList.add('show');
+        document.getElementById('btn-pause').style.display = 'none';
+        document.getElementById('btn-start').style.display = 'inline-block';
+      }
+    }, 1000);
+  });
+
+  document.getElementById('btn-pause').addEventListener('click', () => {
+    if (!running) return;
+    clearInterval(timer);
+    running = false;
+    document.getElementById('btn-pause').textContent = '▶ استمرار';
+    document.getElementById('btn-pause').onclick = resumeTimer;
+  });
+
+  function resumeTimer() {
+    if (running) return;
+    running = true;
+    document.getElementById('btn-pause').textContent = '⏸ إيقاف';
+    document.getElementById('btn-pause').onclick = null;
+    document.getElementById('btn-pause').addEventListener('click', pauseAgain);
+
+    timer = setInterval(() => {
+      remaining--;
+      displayTime(remaining);
+      if (remaining <= 0) {
+        clearInterval(timer);
+        running = false;
+        playBell();
+        document.getElementById('finished').classList.add('show');
+        document.getElementById('btn-pause').style.display = 'none';
+        document.getElementById('btn-start').style.display = 'inline-block';
+      }
+    }, 1000);
+  }
+
+  function pauseAgain() {
+    if (!running) return;
+    clearInterval(timer);
+    running = false;
+    document.getElementById('btn-pause').textContent = '▶ استمرار';
+    document.getElementById('btn-pause').removeEventListener('click', pauseAgain);
+    document.getElementById('btn-pause').onclick = resumeTimer;
+  }
+
+  document.getElementById('btn-reset').addEventListener('click', resetAll);
+
+  function resetAll() {
+    clearInterval(timer);
+    running = false;
+    remaining = 0;
+    document.getElementById('finished').classList.remove('show');
+    document.getElementById('btn-start').style.display = 'inline-block';
+    document.getElementById('btn-pause').style.display = 'none';
+    document.getElementById('btn-pause').textContent = '⏸ إيقاف';
+    document.getElementById('btn-pause').onclick = null;
+    initDisplay(0);
+    prevValues = { h: 0, m: 0, s: 0 };
+  }
+
+  // ===== BELL SOUND (Web Audio API) =====
+  function playBell() {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+
+    function ring(startTime, freq, duration, gain) {
+      const osc = ctx.createOscillator();
+      const gainNode = ctx.createGain();
+      osc.connect(gainNode);
+      gainNode.connect(ctx.destination);
+
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, startTime);
+      osc.frequency.exponentialRampToValueAtTime(freq * 0.5, startTime + duration);
+
+      gainNode.gain.setValueAtTime(0, startTime);
+      gainNode.gain.linearRampToValueAtTime(gain, startTime + 0.01);
+      gainNode.gain.exponentialRampToValueAtTime(0.001, startTime + duration);
+
+      osc.start(startTime);
+      osc.stop(startTime + duration);
+    }
+
+    // جرس 3 مرات
+    const now = ctx.currentTime;
+    ring(now,        880, 1.5, 0.6);
+    ring(now,       1100, 1.5, 0.3);
+    ring(now + 1.8,  880, 1.5, 0.6);
+    ring(now + 1.8, 1100, 1.5, 0.3);
+    ring(now + 3.6,  880, 2.0, 0.7);
+    ring(now + 3.6, 1100, 2.0, 0.35);
+  }
+
+  // init
+  initDisplay(0);
+</script>
 </body>
 </html>
